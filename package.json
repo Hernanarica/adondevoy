@@ -12,6 +12,8 @@
     "astro": "astro"
   },
   "dependencies": {
-    "astro": "^6.2.2"
+    "astro": "^6.2.2",
+    "fullpage.js": "^4.0.41",
+    "swiper": "^12.1.4"
   }
 }

@@ -11,6 +11,12 @@ importers:
       astro:
         specifier: ^6.2.2
         version: 6.2.2(rollup@4.60.3)
+      fullpage.js:
+        specifier: ^4.0.41
+        version: 4.0.41
+      swiper:
+        specifier: ^12.1.4
+        version: 12.1.4
 
 packages:
 
@@ -792,6 +798,9 @@ packages:
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
     os: [darwin]
 
+  fullpage.js@4.0.41:
+    resolution: {integrity: sha512-szA95hxGCXWXQQRODp3DdeyFms909vQJ29SZk9Uur8f/smfcDKDjgDHqyV2e8NvU3ZrzVAOQSBusKm2H/BDeBQ==}
+
   get-tsconfig@5.0.0-beta.4:
     resolution: {integrity: sha512-7nF7C9fIPFEMHgEMEfgIlO9wDdZ8CyHw27rWciFZfHvHDReIiPhsYuzPRXsfvBCqFy1l8RRyyWV7QLM+ZhUJsQ==}
     engines: {node: '>=20.20.0'}
@@ -1214,6 +1223,10 @@ packages:
     resolution: {integrity: sha512-XDpWUOPC6FEibaLzjfe0ucaV0YrOjYotGJO1WpF0Zd+n6ZGEQUsSugaoLq9QkEZtAfQIxT42UChcssDVPP3+/w==}
     engines: {node: '>=16'}
     hasBin: true
+
+  swiper@12.1.4:
+    resolution: {integrity: sha512-bihiwoKMOQwW8FfdUbo1DgkVH25E+4ZELIq0oopL1KTKBteLuaTMi/wwFjMxtlhTkk45k3XQ89D1Fvv0spSqBA==}
+    engines: {node: '>= 4.7.0'}
 
   tiny-inflate@1.0.3:
     resolution: {integrity: sha512-pkY1fj1cKHb2seWDy0B16HeWyczlJA9/WW3u3c4z/NiWDsO3DOU5D7nhTLE9CF0yXv/QZFY7sEJmj24dK+Rrqw==}
@@ -2112,6 +2125,8 @@ snapshots:
   fsevents@2.3.3:
     optional: true
 
+  fullpage.js@4.0.41: {}
+
   get-tsconfig@5.0.0-beta.4:
     dependencies:
       resolve-pkg-maps: 1.0.0
@@ -2867,6 +2882,8 @@ snapshots:
       csso: 5.0.5
       picocolors: 1.1.1
       sax: 1.6.0
+
+  swiper@12.1.4: {}
 
   tiny-inflate@1.0.3: {}
 
