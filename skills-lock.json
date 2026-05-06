@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "skills": {
+    "bem-structure": {
+      "source": "rolemodel/rolemodel-skills",
+      "sourceType": "github",
+      "skillPath": "skills/bem-structure/SKILL.md",
+      "computedHash": "eefda5a5e6787c68e5383d9246f7dca8a9920f79529a84c59cd1a726bb7247ad"
+    },
+    "frontend-design": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "skillPath": "skills/frontend-design/SKILL.md",
+      "computedHash": "063a0e6448123cd359ad0044cc46b0e490cc7964d45ef4bb9fd842bd2ffbca67"
+    }
+  }
+}
