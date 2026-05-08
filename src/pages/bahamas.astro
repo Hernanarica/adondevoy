@@ -1,0 +1,760 @@
+---
+import { readdirSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
+
+import 'fullpage.js/dist/fullpage.min.css';
+import 'swiper/css';
+import 'swiper/css/navigation';
+
+import Layout from '../layouts/Layout.astro';
+
+function getImages(folder: string): string[] {
+  const dir = join(process.cwd(), 'public', folder);
+  return readdirSync(dir)
+    .filter(f => /\.(jpe?g|png|webp|avif|gif)$/i.test(f) && !/^00\./i.test(f))
+    .sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }));
+}
+
+interface CaptionEntry { title?: string; description?: string }
+
+function getFolderCaptions(folder: string): Record<string, CaptionEntry> {
+  const jsonPath = join(process.cwd(), 'public', folder, 'fotos.json');
+  try {
+    const data: Array<{ photo: string; title: string; description: string }> =
+      JSON.parse(readFileSync(jsonPath, 'utf-8'));
+    return Object.fromEntries(
+      data.map(item => [item.photo, { title: item.title || undefined, description: item.description || undefined }])
+    );
+  } catch {
+    return {};
+  }
+}
+
+const bahamasPhotos = getImages('Bahamas/Bahamas');
+
+const captions: Record<string, Record<string, CaptionEntry>> = {
+  Bahamas: getFolderCaptions('Bahamas/Bahamas'),
+};
+
+const currentCountry = 'bahamas';
+---
+
+<Layout>
+  <header class="site-header" id="js-site-header">
+    <div class="site-header__brand">
+      <span class="site-header__title" id="js-section-title">BAHAMAS</span>
+      <span class="site-header__sub" id="js-section-sub">en familia</span>
+    </div>
+    <button class="site-header__menu-btn" id="js-menu-btn" aria-label="Menú" aria-expanded="false">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </header>
+
+  <nav class="country-nav" id="js-country-nav" aria-hidden="true">
+    <ul class="country-nav__list">
+      <li><a class="country-nav__link" href={`${import.meta.env.BASE_URL}`}        data-country="argentina">Argentina</a></li>
+      <li><a class="country-nav__link" href={`${import.meta.env.BASE_URL}brasil`}  data-country="brasil">Brasil</a></li>
+      <li><a class="country-nav__link" href={`${import.meta.env.BASE_URL}uruguay`} data-country="uruguay">Uruguay</a></li>
+      <li><a class="country-nav__link" href={`${import.meta.env.BASE_URL}chile`}   data-country="chile">Chile</a></li>
+      <li><a class="country-nav__link" href={`${import.meta.env.BASE_URL}bahamas`}        data-country="bahamas">Bahamas</a></li>
+      <li class="country-nav__separator">Europa</li>
+      <li><a class="country-nav__link" href={`${import.meta.env.BASE_URL}europa-rin`}     data-country="europa-rin">Crucero Rin</a></li>
+      <li><a class="country-nav__link" href={`${import.meta.env.BASE_URL}europa-danubio`} data-country="europa-danubio">Crucero Danubio</a></li>
+      <li><a class="country-nav__link" href={`${import.meta.env.BASE_URL}europa-baltico`} data-country="europa-baltico">Crucero Báltico</a></li>
+      <li><a class="country-nav__link" href={`${import.meta.env.BASE_URL}europa-oeste`}   data-country="europa-oeste">Europa Occidental</a></li>
+    </ul>
+  </nav>
+  <div class="country-nav__backdrop" id="js-country-nav-backdrop"></div>
+
+  <div id="fullpage" class="photo-gallery">
+
+    <!-- Bahamas -->
+    <div class="section photo-gallery__section" data-anchor="bahamas">
+      <div class="swiper photo-gallery__carousel" id="swiper-bahamas">
+        <div class="swiper-wrapper">
+
+          <!-- Slide intro Bahamas -->
+          <div class="swiper-slide photo-gallery__slide photo-gallery__slide--intro">
+            <div class="photo-gallery__intro">
+              <h2 class="photo-gallery__intro-heading">BAHAMAS</h2>
+              <p class="photo-gallery__intro-tagline">en familia</p>
+              <p class="photo-gallery__intro-body">
+                Una escapada familiar que comenzó en la vibrante Miami y nos llevó hasta Nassau,
+                la colorida capital de las Bahamas. Playas de arena blanca, aguas de un azul
+                imposible, historia pirata y una cultura caribeña única esperaban a la familia
+                en estas paradisíacas islas del Atlántico norte.
+              </p>
+            </div>
+          </div>
+
+          {bahamasPhotos.map((img, i) => (
+            <div class="swiper-slide photo-gallery__slide">
+              <div class="photo-gallery__slide-media">
+                <img
+                  class="photo-gallery__image"
+                  src={`${import.meta.env.BASE_URL}Bahamas/Bahamas/${img}`}
+                  alt={`Bahamas — ${img.replace(/\.\w+$/, '').replace(/-/g, ' ')}`}
+                  loading={i === 0 ? 'eager' : 'lazy'}
+                  decoding={i === 0 ? 'sync' : 'async'}
+                />
+              </div>
+              <div class="photo-gallery__caption">
+                {captions.Bahamas?.[img]?.title && <span class="photo-gallery__caption-title">{captions.Bahamas[img].title}</span>}
+                {captions.Bahamas?.[img]?.description && <span class="photo-gallery__caption-desc">{captions.Bahamas[img].description}</span>}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div class="photo-gallery__counter" aria-live="polite">
+          <span class="photo-gallery__counter-current">1</span>
+          <span class="photo-gallery__counter-sep">/</span>
+          <span class="photo-gallery__counter-total">{bahamasPhotos.length + 1}</span>
+        </div>
+      </div>
+      <button id="prev-bahamas" class="swiper-button-prev photo-gallery__nav photo-gallery__nav--prev" aria-label="Foto anterior"></button>
+      <button id="next-bahamas" class="swiper-button-next photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
+    </div>
+
+  </div>
+
+  <nav class="section-nav" aria-label="Secciones">
+    <button class="section-nav__item section-nav__item--active" data-anchor="bahamas" data-label="Bahamas" aria-label="Ir a Bahamas"></button>
+  </nav>
+</Layout>
+
+<style>
+  /* ─── Swiper theme overrides ─── */
+  :root {
+    --swiper-theme-color: #ffffff;
+    --swiper-navigation-color: rgba(255, 255, 255, 0.85);
+    --swiper-navigation-size: 36px;
+    --swiper-navigation-sides-offset: 24px;
+    --caption-height: 80px;
+    --header-height: 60px;
+    --nav-col-width: 160px;
+    --left-margin: 80px;
+  }
+
+  /* ─── Site header ─── */
+  .site-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: var(--header-height);
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px 0 32px;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, transparent 100%);
+    pointer-events: none;
+  }
+
+  .site-header__brand {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+
+  @keyframes brand-leave {
+    from { opacity: 1; transform: translateY(0); }
+    to   { opacity: 0; transform: translateY(-7px); }
+  }
+
+  @keyframes brand-enter {
+    from { opacity: 0; transform: translateY(7px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .site-header__brand--leaving {
+    animation: brand-leave 0.22s ease forwards;
+  }
+
+  .site-header__brand--entering {
+    animation: brand-enter 0.28s ease forwards;
+  }
+
+  .site-header__title {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: #ffffff;
+    text-shadow: 0 1px 8px rgba(0,0,0,0.5);
+    transition: opacity 0.3s ease;
+  }
+
+  .site-header__sub {
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    color: rgba(255,255,255,0.7);
+    text-shadow: 0 1px 6px rgba(0,0,0,0.5);
+  }
+
+  .site-header__menu-btn {
+    pointer-events: all;
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 8px;
+
+    span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: rgba(255,255,255,0.85);
+      border-radius: 1px;
+      transition: background 0.2s;
+    }
+
+    &:hover span {
+      background: #ffffff;
+    }
+  }
+
+  /* ─── Section nav (bullets blancos) ─── */
+  .section-nav {
+    position: fixed;
+    right: 0;
+    width: var(--nav-col-width);
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 50;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .section-nav__item {
+    position: relative;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    background: rgba(255,255,255,0.3);
+    transition: background 0.3s ease, transform 0.2s ease;
+    padding: 0;
+
+    &::before {
+      content: attr(data-label);
+      position: absolute;
+      right: calc(100% + 14px);
+      top: 50%;
+      transform: translateY(-50%) translateX(6px);
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      color: rgba(255, 255, 255, 0.88);
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 0.58rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      padding: 4px 10px;
+      border-radius: 3px;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+
+    &:hover::before {
+      opacity: 1;
+      transform: translateY(-50%) translateX(0);
+    }
+
+    &:hover {
+      background: rgba(255,255,255,0.65);
+      transform: scale(1.25);
+    }
+
+    &.section-nav__item--active {
+      background: #ffffff;
+      transform: scale(1.2);
+      box-shadow: 0 0 6px rgba(255,255,255,0.5);
+    }
+  }
+
+  /* ─── fullpage.js watermark ─── */
+  :global(.fp-watermark) {
+    display: none;
+  }
+
+  /* ─── fullpage.js navigation dots ─── */
+  :global(#fp-nav ul li a span),
+  :global(#fp-nav ul li:hover a span) {
+    background: rgba(255, 255, 255, 0.7);
+    box-shadow: 0 0 0 1.5px rgba(0, 0, 0, 0.35), 0 1px 6px rgba(0, 0, 0, 0.5);
+  }
+  :global(#fp-nav ul li a.active span) {
+    background: #ffffff;
+    width: 10px;
+    height: 10px;
+    margin: -5px 0 0 -5px;
+    box-shadow: 0 0 0 1.5px rgba(0, 0, 0, 0.25), 0 2px 8px rgba(0, 0, 0, 0.6);
+  }
+  :global(#fp-nav .fp-tooltip) {
+    color: #ffffff;
+    font-family: 'Georgia', serif;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
+  }
+
+  /* ─── Sections background ─── */
+  :global(.fp-section.photo-gallery__section) {
+    background: #000;
+  }
+
+  /* ─── photo-gallery block ─── */
+  .photo-gallery {
+    .photo-gallery__carousel {
+      position: relative;
+      width: 1000px;
+      margin-left: calc((100% - var(--nav-col-width) - 1000px) / 2);
+      height: calc(100vh - var(--header-height) - 120px);
+      margin-top: calc(var(--header-height) + 56px);
+      --swiper-navigation-top-offset: calc(50% - calc(var(--caption-height) / 2));
+    }
+
+    .photo-gallery__slide {
+      height: 100%;
+      overflow: hidden;
+
+      &.photo-gallery__slide--intro {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #000;
+      }
+
+      &:not(.photo-gallery__slide--intro) {
+        display: flex;
+        flex-direction: column;
+      }
+    }
+
+    .photo-gallery__slide-media {
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+      position: relative;
+      background: #000;
+    }
+
+    .photo-gallery__image {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center;
+      user-select: none;
+      -webkit-user-drag: none;
+      pointer-events: none;
+    }
+
+    .photo-gallery__caption {
+      height: var(--caption-height);
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 3px;
+      padding: 0 48px;
+      background: #000;
+    }
+
+    .photo-gallery__caption-title {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 0.62rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    .photo-gallery__caption-desc {
+      font-family: 'Georgia', 'Times New Roman', serif;
+      font-size: 0.82rem;
+      font-style: italic;
+      letter-spacing: 0.06em;
+      color: rgba(255, 255, 255, 0.75);
+    }
+
+    /* gradient overlay — hidden on intro slide, stops above caption */
+    .photo-gallery__carousel::after {
+      content: '';
+      position: absolute;
+      inset: 0 0 var(--caption-height) 0;
+      background: linear-gradient(
+        to top,
+        rgba(0, 0, 0, 0.6) 0%,
+        rgba(0, 0, 0, 0.15) 30%,
+        rgba(0, 0, 0, 0) 60%
+      );
+      z-index: 10;
+      pointer-events: none;
+      opacity: 1;
+      transition: opacity 0.3s ease;
+    }
+
+    .photo-gallery__carousel--intro-active {
+      &::after {
+        opacity: 0;
+      }
+
+      .photo-gallery__nav {
+        --swiper-navigation-color: rgba(122, 173, 223, 0.7);
+      }
+    }
+
+    .photo-gallery__counter {
+      position: absolute;
+      bottom: calc(var(--caption-height) + 12px);
+      right: 48px;
+      z-index: 20;
+      color: rgba(255, 255, 255, 0.65);
+      font-family: 'Georgia', serif;
+      font-size: 0.8rem;
+      letter-spacing: 0.12em;
+      pointer-events: none;
+      transition: color 0.3s ease;
+    }
+
+    .photo-gallery__carousel--intro-active {
+      .photo-gallery__counter {
+        color: rgba(122, 173, 223, 0.8);
+      }
+    }
+
+    .photo-gallery__counter-sep {
+      margin: 0 4px;
+    }
+
+    .photo-gallery__nav {
+      position: absolute;
+      bottom: 16px;
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      z-index: 30;
+      opacity: 0.85;
+      filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.8));
+      transition: opacity 0.2s ease;
+
+      &.photo-gallery__nav--prev {
+        left: calc(var(--left-margin) + 8px);
+      }
+
+      &.photo-gallery__nav--next {
+        right: calc(var(--nav-col-width) + 8px);
+        left: auto;
+      }
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+
+    /* ─── Intro slide content ─── */
+    .photo-gallery__intro {
+      text-align: center;
+      padding: 2rem;
+      max-width: 700px;
+    }
+
+    .photo-gallery__intro-heading {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: clamp(1.8rem, 5vw, 3.5rem);
+      font-weight: 400;
+      color: #7aaddf;
+      letter-spacing: 0.04em;
+      margin: 0;
+      line-height: 1;
+    }
+
+    .photo-gallery__intro-tagline {
+      font-family: 'Georgia', 'Times New Roman', serif;
+      font-style: italic;
+      font-size: clamp(1rem, 2vw, 1.35rem);
+      color: #7aaddf;
+      margin: 0.5em 0 0;
+    }
+
+    .photo-gallery__intro-body {
+      font-family: Arial, 'Helvetica Neue', sans-serif;
+      font-size: clamp(0.82rem, 1.4vw, 1rem);
+      color: rgba(255, 255, 255, 0.75);
+      max-width: 580px;
+      margin: 1.6em auto 0;
+      line-height: 1.7;
+      text-align: justify;
+    }
+  }
+
+  /* ─── Menú de países ─── */
+  .country-nav {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 200px;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.88);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    z-index: 200;
+    padding: 4rem 2rem;
+    box-sizing: border-box;
+
+    &.is-open {
+      transform: translateX(0);
+    }
+  }
+
+  .country-nav__backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 199;
+    display: none;
+
+    &.is-open {
+      display: block;
+    }
+  }
+
+  .country-nav__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .country-nav__link {
+    display: block;
+    padding: 0.75rem 0;
+    color: rgba(255, 255, 255, 0.45);
+    text-decoration: none;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.6rem;
+    font-weight: 600;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    transition: color 0.2s ease;
+
+    &[data-current] {
+      color: #ffffff;
+    }
+
+    &:hover {
+      color: rgba(255, 255, 255, 0.85);
+    }
+  }
+  .country-nav__separator {
+    padding: 0.75rem 0 0.25rem; margin-top: 0.5rem;
+    color: rgba(255,255,255,0.25); font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.5rem; font-weight: 600; letter-spacing: 0.3em; text-transform: uppercase;
+    border-top: 1px solid rgba(255,255,255,0.1); list-style: none;
+  }
+
+  /* ─── Mobile ─── */
+  @media (max-width: 768px) {
+    .site-header {
+      padding: 0 16px 0 20px;
+    }
+
+    /* Bullets verticales pegados al margen derecho */
+    .section-nav {
+      right: 12px;
+      left: auto;
+      top: 50%;
+      bottom: auto;
+      transform: translateY(-50%);
+      flex-direction: column;
+      width: auto;
+      gap: 8px;
+    }
+
+    .section-nav__item {
+      width: 6px;
+      height: 6px;
+
+      &.section-nav__item--active {
+        transform: scale(1.2);
+      }
+    }
+
+    .photo-gallery {
+      /* Foto ocupa todo el ancho, márgenes reducidos */
+      .photo-gallery__carousel {
+        width: 100%;
+        margin-left: 0;
+        height: calc(100dvh - var(--header-height) - 40px);
+        margin-top: calc(var(--header-height) + 8px);
+      }
+
+      .photo-gallery__nav {
+        display: none;
+      }
+
+      .photo-gallery__intro-body {
+        text-align: left;
+      }
+
+      .photo-gallery__caption {
+        padding: 0 20px;
+      }
+    }
+  }
+</style>
+
+<script>
+  import fullpage from 'fullpage.js';
+  import Swiper from 'swiper';
+  import { Navigation, Keyboard } from 'swiper/modules';
+
+  const SECTIONS = [
+    { anchor: 'bahamas', label: 'Bahamas', title: 'BAHAMAS', sub: 'en familia' },
+  ];
+
+  function updateSectionUI(anchor: string): void {
+    const section = SECTIONS.find(s => s.anchor === anchor);
+    if (!section) return;
+    const titleEl = document.getElementById('js-section-title');
+    const subEl = document.getElementById('js-section-sub');
+    if (titleEl) titleEl.textContent = section.title;
+    if (subEl) subEl.textContent = section.sub;
+    document.querySelectorAll<HTMLElement>('.section-nav__item').forEach(item => {
+      item.classList.toggle('section-nav__item--active', item.dataset.anchor === anchor);
+    });
+  }
+
+  function updateCounter(swiper: InstanceType<typeof Swiper>): void {
+    const current = swiper.el.querySelector<HTMLElement>('.photo-gallery__counter-current');
+    if (current) current.textContent = String(swiper.activeIndex + 1);
+  }
+
+  function updateIntroState(swiper: InstanceType<typeof Swiper>): void {
+    swiper.el.classList.toggle('photo-gallery__carousel--intro-active', swiper.activeIndex === 0);
+  }
+
+  function makeHandlers(anchor: string) {
+    return {
+      init(this: InstanceType<typeof Swiper>) {
+        updateCounter(this);
+        updateIntroState(this);
+      },
+      slideChange(this: InstanceType<typeof Swiper>) {
+        savedIndex[anchor] = this.activeIndex;
+        updateCounter(this);
+        updateIntroState(this);
+      },
+    };
+  }
+
+  const brand = document.querySelector<HTMLElement>('.site-header__brand');
+
+  function animateBrandLeave(): void {
+    brand?.classList.remove('site-header__brand--entering');
+    brand?.classList.add('site-header__brand--leaving');
+  }
+
+  function animateBrandEnter(): void {
+    brand?.classList.remove('site-header__brand--leaving');
+    brand?.classList.add('site-header__brand--entering');
+  }
+
+  const savedIndex: Record<string, number> = {};
+  const swipers: Record<string, InstanceType<typeof Swiper>> = {};
+
+  for (const { anchor } of SECTIONS) {
+    savedIndex[anchor] = 0;
+    swipers[anchor] = new Swiper(`#swiper-${anchor}`, {
+      modules: [Navigation, Keyboard],
+      direction: 'horizontal',
+      touchReleaseOnEdges: true,
+      resistanceRatio: 0,
+      navigation: { prevEl: `#prev-${anchor}`, nextEl: `#next-${anchor}` },
+      keyboard: { enabled: true, onlyInViewport: true },
+      a11y: { enabled: true },
+      preloadImages: false,
+      on: makeHandlers(anchor),
+    });
+    swipers[anchor].disable();
+  }
+
+  swipers[SECTIONS[0].anchor].enable();
+  updateSectionUI(SECTIONS[0].anchor);
+
+  new fullpage('#fullpage', {
+    autoScrolling: true,
+    fitToSection: true,
+    navigation: false,
+    anchors: SECTIONS.map(s => s.anchor),
+    scrollingSpeed: 700,
+    keyboardScrolling: true,
+    onLeave() {
+      Object.values(swipers).forEach(s => s.disable());
+      animateBrandLeave();
+    },
+    afterLoad(_origin: unknown, destination: { anchor: string }) {
+      const swiper = swipers[destination.anchor];
+      swiper.enable();
+      swiper.slideTo(savedIndex[destination.anchor], 0);
+      updateSectionUI(destination.anchor);
+      animateBrandEnter();
+    },
+  });
+
+  document.querySelectorAll<HTMLButtonElement>('.section-nav__item').forEach(item => {
+    item.addEventListener('click', () => {
+      if (item.dataset.anchor) (window as any).fullpage_api?.moveTo(item.dataset.anchor);
+    });
+  });
+
+  // ── Menú de países ────────────────────────────────────────────
+  const currentCountry = 'bahamas';
+
+  const menuBtn  = document.getElementById('js-menu-btn');
+  const countryNav = document.getElementById('js-country-nav');
+  const backdrop = document.getElementById('js-country-nav-backdrop');
+
+  function openMenu(): void {
+    countryNav?.classList.add('is-open');
+    backdrop?.classList.add('is-open');
+    countryNav?.setAttribute('aria-hidden', 'false');
+    menuBtn?.setAttribute('aria-expanded', 'true');
+  }
+
+  function closeMenu(): void {
+    countryNav?.classList.remove('is-open');
+    backdrop?.classList.remove('is-open');
+    countryNav?.setAttribute('aria-hidden', 'true');
+    menuBtn?.setAttribute('aria-expanded', 'false');
+  }
+
+  menuBtn?.addEventListener('click', () => {
+    countryNav?.classList.contains('is-open') ? closeMenu() : openMenu();
+  });
+  backdrop?.addEventListener('click', closeMenu);
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMenu(); });
+
+  document.querySelector<HTMLElement>(`[data-country="${currentCountry}"]`)?.setAttribute('data-current', '');
+  // ─────────────────────────────────────────────────────────────
+</script>

@@ -1,0 +1,797 @@
+---
+import { readdirSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
+
+import 'fullpage.js/dist/fullpage.min.css';
+import 'swiper/css';
+import 'swiper/css/navigation';
+
+import Layout from '../layouts/Layout.astro';
+
+function getImages(folder: string): string[] {
+  const dir = join(process.cwd(), 'public', folder);
+  return readdirSync(dir)
+    .filter(f => /\.(jpe?g|png|webp|avif|gif)$/i.test(f) && !/^00\./i.test(f))
+    .sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }));
+}
+
+interface CaptionEntry { title?: string; description?: string }
+
+function getFolderCaptions(folder: string): Record<string, CaptionEntry> {
+  const jsonPath = join(process.cwd(), 'public', folder, 'fotos.json');
+  try {
+    const data: Array<{ photo: string; title: string; description: string }> =
+      JSON.parse(readFileSync(jsonPath, 'utf-8'));
+    return Object.fromEntries(
+      data.map(item => [item.photo, { title: item.title || undefined, description: item.description || undefined }])
+    );
+  } catch {
+    return {};
+  }
+}
+
+const basileaPhotos           = getImages('Europa/basilea');
+const estrasburgoColmarPhotos = getImages('Europa/estrasburgo-colmar');
+const breisachPhotos          = getImages('Europa/breisach');
+const rinRomanticoPhotos      = getImages('Europa/rhin-romantico');
+const wormsPhotos             = getImages('Europa/worms');
+const heidelbergEspiraPhotos  = getImages('Europa/heidelberg-espira');
+const frankfurtPhotos         = getImages('Europa/frankfurt');
+const magunciaPhotos          = getImages('Europa/maguncia');
+const rudesheiPhotos          = getImages('Europa/rudesheim');
+const coblenzaPhotos          = getImages('Europa/coblenza');
+const linzAmRheinPhotos       = getImages('Europa/linz-am-rhein');
+const cochemPhotos            = getImages('Europa/cochem');
+const coloniaPhotos           = getImages('Europa/colonia-bonn');
+const dusseldorfPhotos        = getImages('Europa/dusseldorf');
+const amsterdamPhotos         = getImages('Europa/amsterdam');
+
+const captions: Record<string, Record<string, CaptionEntry>> = {
+  Basilea:           getFolderCaptions('Europa/basilea'),
+  EstrasburgoColmar: getFolderCaptions('Europa/estrasburgo-colmar'),
+  Breisach:          getFolderCaptions('Europa/breisach'),
+  RinRomantico:      getFolderCaptions('Europa/rhin-romantico'),
+  Worms:             getFolderCaptions('Europa/worms'),
+  HeidelbergEspira:  getFolderCaptions('Europa/heidelberg-espira'),
+  Frankfurt:         getFolderCaptions('Europa/frankfurt'),
+  Maguncia:          getFolderCaptions('Europa/maguncia'),
+  Rudesheim:         getFolderCaptions('Europa/rudesheim'),
+  Coblenza:          getFolderCaptions('Europa/coblenza'),
+  LinzAmRhein:       getFolderCaptions('Europa/linz-am-rhein'),
+  Cochem:            getFolderCaptions('Europa/cochem'),
+  Colonia:           getFolderCaptions('Europa/colonia-bonn'),
+  Dusseldorf:        getFolderCaptions('Europa/dusseldorf'),
+  Amsterdam:         getFolderCaptions('Europa/amsterdam'),
+};
+
+const currentCountry = 'europa-rin';
+---
+
+<Layout>
+  <header class="site-header" id="js-site-header">
+    <div class="site-header__brand">
+      <span class="site-header__title" id="js-section-title">BASILEA</span>
+      <span class="site-header__sub" id="js-section-sub">Suiza</span>
+    </div>
+    <button class="site-header__menu-btn" id="js-menu-btn" aria-label="Menú" aria-expanded="false">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </header>
+
+  <nav class="country-nav" id="js-country-nav" aria-hidden="true">
+    <ul class="country-nav__list">
+      <li><a class="country-nav__link" href={`${import.meta.env.BASE_URL}`}               data-country="argentina">Argentina</a></li>
+      <li><a class="country-nav__link" href={`${import.meta.env.BASE_URL}brasil`}         data-country="brasil">Brasil</a></li>
+      <li><a class="country-nav__link" href={`${import.meta.env.BASE_URL}uruguay`}        data-country="uruguay">Uruguay</a></li>
+      <li><a class="country-nav__link" href={`${import.meta.env.BASE_URL}chile`}          data-country="chile">Chile</a></li>
+      <li><a class="country-nav__link" href={`${import.meta.env.BASE_URL}bahamas`}        data-country="bahamas">Bahamas</a></li>
+      <li class="country-nav__separator">Europa</li>
+      <li><a class="country-nav__link" href={`${import.meta.env.BASE_URL}europa-rin`}     data-country="europa-rin">Crucero Rin</a></li>
+      <li><a class="country-nav__link" href={`${import.meta.env.BASE_URL}europa-danubio`} data-country="europa-danubio">Crucero Danubio</a></li>
+      <li><a class="country-nav__link" href={`${import.meta.env.BASE_URL}europa-baltico`} data-country="europa-baltico">Crucero Báltico</a></li>
+      <li><a class="country-nav__link" href={`${import.meta.env.BASE_URL}europa-oeste`}   data-country="europa-oeste">Europa Occidental</a></li>
+    </ul>
+  </nav>
+  <div class="country-nav__backdrop" id="js-country-nav-backdrop"></div>
+
+  <div id="fullpage" class="photo-gallery">
+
+    <!-- Basilea -->
+    <div class="section photo-gallery__section" data-anchor="basilea">
+      <div class="swiper photo-gallery__carousel" id="swiper-basilea">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide photo-gallery__slide photo-gallery__slide--intro">
+            <div class="photo-gallery__intro">
+              <h2 class="photo-gallery__intro-heading">BASILEA</h2>
+              <p class="photo-gallery__intro-tagline">Suiza</p>
+            </div>
+          </div>
+          {basileaPhotos.map((img, i) => (
+            <div class="swiper-slide photo-gallery__slide">
+              <div class="photo-gallery__slide-media">
+                <img class="photo-gallery__image" src={`${import.meta.env.BASE_URL}Europa/basilea/${img}`} alt={`Basilea — ${img.replace(/\.\w+$/, '').replace(/-/g, ' ')}`} loading={i === 0 ? 'eager' : 'lazy'} decoding={i === 0 ? 'sync' : 'async'} />
+              </div>
+              <div class="photo-gallery__caption">
+                {captions.Basilea?.[img]?.title && <span class="photo-gallery__caption-title">{captions.Basilea[img].title}</span>}
+                {captions.Basilea?.[img]?.description && <span class="photo-gallery__caption-desc">{captions.Basilea[img].description}</span>}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div class="photo-gallery__counter" aria-live="polite"><span class="photo-gallery__counter-current">1</span><span class="photo-gallery__counter-sep">/</span><span class="photo-gallery__counter-total">{basileaPhotos.length + 1}</span></div>
+      </div>
+      <button id="prev-basilea" class="swiper-button-prev photo-gallery__nav photo-gallery__nav--prev" aria-label="Foto anterior"></button>
+      <button id="next-basilea" class="swiper-button-next photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
+    </div>
+
+    <!-- Estrasburgo y Colmar -->
+    <div class="section photo-gallery__section" data-anchor="estrasburgo">
+      <div class="swiper photo-gallery__carousel" id="swiper-estrasburgo">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide photo-gallery__slide photo-gallery__slide--intro">
+            <div class="photo-gallery__intro">
+              <h2 class="photo-gallery__intro-heading">ESTRASBURGO</h2>
+              <p class="photo-gallery__intro-tagline">y Colmar</p>
+            </div>
+          </div>
+          {estrasburgoColmarPhotos.map((img, i) => (
+            <div class="swiper-slide photo-gallery__slide">
+              <div class="photo-gallery__slide-media">
+                <img class="photo-gallery__image" src={`${import.meta.env.BASE_URL}Europa/estrasburgo-colmar/${img}`} alt={`Estrasburgo Colmar — ${img.replace(/\.\w+$/, '').replace(/-/g, ' ')}`} loading={i === 0 ? 'eager' : 'lazy'} decoding={i === 0 ? 'sync' : 'async'} />
+              </div>
+              <div class="photo-gallery__caption">
+                {captions.EstrasburgoColmar?.[img]?.title && <span class="photo-gallery__caption-title">{captions.EstrasburgoColmar[img].title}</span>}
+                {captions.EstrasburgoColmar?.[img]?.description && <span class="photo-gallery__caption-desc">{captions.EstrasburgoColmar[img].description}</span>}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div class="photo-gallery__counter" aria-live="polite"><span class="photo-gallery__counter-current">1</span><span class="photo-gallery__counter-sep">/</span><span class="photo-gallery__counter-total">{estrasburgoColmarPhotos.length + 1}</span></div>
+      </div>
+      <button id="prev-estrasburgo" class="swiper-button-prev photo-gallery__nav photo-gallery__nav--prev" aria-label="Foto anterior"></button>
+      <button id="next-estrasburgo" class="swiper-button-next photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
+    </div>
+
+    <!-- Breisach -->
+    <div class="section photo-gallery__section" data-anchor="breisach">
+      <div class="swiper photo-gallery__carousel" id="swiper-breisach">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide photo-gallery__slide photo-gallery__slide--intro">
+            <div class="photo-gallery__intro">
+              <h2 class="photo-gallery__intro-heading">BREISACH</h2>
+              <p class="photo-gallery__intro-tagline">Alemania</p>
+            </div>
+          </div>
+          {breisachPhotos.map((img, i) => (
+            <div class="swiper-slide photo-gallery__slide">
+              <div class="photo-gallery__slide-media">
+                <img class="photo-gallery__image" src={`${import.meta.env.BASE_URL}Europa/breisach/${img}`} alt={`Breisach — ${img.replace(/\.\w+$/, '').replace(/-/g, ' ')}`} loading={i === 0 ? 'eager' : 'lazy'} decoding={i === 0 ? 'sync' : 'async'} />
+              </div>
+              <div class="photo-gallery__caption">
+                {captions.Breisach?.[img]?.title && <span class="photo-gallery__caption-title">{captions.Breisach[img].title}</span>}
+                {captions.Breisach?.[img]?.description && <span class="photo-gallery__caption-desc">{captions.Breisach[img].description}</span>}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div class="photo-gallery__counter" aria-live="polite"><span class="photo-gallery__counter-current">1</span><span class="photo-gallery__counter-sep">/</span><span class="photo-gallery__counter-total">{breisachPhotos.length + 1}</span></div>
+      </div>
+      <button id="prev-breisach" class="swiper-button-prev photo-gallery__nav photo-gallery__nav--prev" aria-label="Foto anterior"></button>
+      <button id="next-breisach" class="swiper-button-next photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
+    </div>
+
+    <!-- Rin Romántico -->
+    <div class="section photo-gallery__section" data-anchor="rin-romantico">
+      <div class="swiper photo-gallery__carousel" id="swiper-rin-romantico">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide photo-gallery__slide photo-gallery__slide--intro">
+            <div class="photo-gallery__intro">
+              <h2 class="photo-gallery__intro-heading">RIN ROMÁNTICO</h2>
+            </div>
+          </div>
+          {rinRomanticoPhotos.map((img, i) => (
+            <div class="swiper-slide photo-gallery__slide">
+              <div class="photo-gallery__slide-media">
+                <img class="photo-gallery__image" src={`${import.meta.env.BASE_URL}Europa/rhin-romantico/${img}`} alt={`Rin Romántico — ${img.replace(/\.\w+$/, '').replace(/-/g, ' ')}`} loading={i === 0 ? 'eager' : 'lazy'} decoding={i === 0 ? 'sync' : 'async'} />
+              </div>
+              <div class="photo-gallery__caption">
+                {captions.RinRomantico?.[img]?.title && <span class="photo-gallery__caption-title">{captions.RinRomantico[img].title}</span>}
+                {captions.RinRomantico?.[img]?.description && <span class="photo-gallery__caption-desc">{captions.RinRomantico[img].description}</span>}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div class="photo-gallery__counter" aria-live="polite"><span class="photo-gallery__counter-current">1</span><span class="photo-gallery__counter-sep">/</span><span class="photo-gallery__counter-total">{rinRomanticoPhotos.length + 1}</span></div>
+      </div>
+      <button id="prev-rin-romantico" class="swiper-button-prev photo-gallery__nav photo-gallery__nav--prev" aria-label="Foto anterior"></button>
+      <button id="next-rin-romantico" class="swiper-button-next photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
+    </div>
+
+    <!-- Worms -->
+    <div class="section photo-gallery__section" data-anchor="worms">
+      <div class="swiper photo-gallery__carousel" id="swiper-worms">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide photo-gallery__slide photo-gallery__slide--intro">
+            <div class="photo-gallery__intro">
+              <h2 class="photo-gallery__intro-heading">WORMS</h2>
+              <p class="photo-gallery__intro-tagline">Alemania</p>
+            </div>
+          </div>
+          {wormsPhotos.map((img, i) => (
+            <div class="swiper-slide photo-gallery__slide">
+              <div class="photo-gallery__slide-media">
+                <img class="photo-gallery__image" src={`${import.meta.env.BASE_URL}Europa/worms/${img}`} alt={`Worms — ${img.replace(/\.\w+$/, '').replace(/-/g, ' ')}`} loading={i === 0 ? 'eager' : 'lazy'} decoding={i === 0 ? 'sync' : 'async'} />
+              </div>
+              <div class="photo-gallery__caption">
+                {captions.Worms?.[img]?.title && <span class="photo-gallery__caption-title">{captions.Worms[img].title}</span>}
+                {captions.Worms?.[img]?.description && <span class="photo-gallery__caption-desc">{captions.Worms[img].description}</span>}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div class="photo-gallery__counter" aria-live="polite"><span class="photo-gallery__counter-current">1</span><span class="photo-gallery__counter-sep">/</span><span class="photo-gallery__counter-total">{wormsPhotos.length + 1}</span></div>
+      </div>
+      <button id="prev-worms" class="swiper-button-prev photo-gallery__nav photo-gallery__nav--prev" aria-label="Foto anterior"></button>
+      <button id="next-worms" class="swiper-button-next photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
+    </div>
+
+    <!-- Heidelberg y Espira -->
+    <div class="section photo-gallery__section" data-anchor="heidelberg">
+      <div class="swiper photo-gallery__carousel" id="swiper-heidelberg">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide photo-gallery__slide photo-gallery__slide--intro">
+            <div class="photo-gallery__intro">
+              <h2 class="photo-gallery__intro-heading">HEIDELBERG</h2>
+              <p class="photo-gallery__intro-tagline">y Espira</p>
+            </div>
+          </div>
+          {heidelbergEspiraPhotos.map((img, i) => (
+            <div class="swiper-slide photo-gallery__slide">
+              <div class="photo-gallery__slide-media">
+                <img class="photo-gallery__image" src={`${import.meta.env.BASE_URL}Europa/heidelberg-espira/${img}`} alt={`Heidelberg Espira — ${img.replace(/\.\w+$/, '').replace(/-/g, ' ')}`} loading={i === 0 ? 'eager' : 'lazy'} decoding={i === 0 ? 'sync' : 'async'} />
+              </div>
+              <div class="photo-gallery__caption">
+                {captions.HeidelbergEspira?.[img]?.title && <span class="photo-gallery__caption-title">{captions.HeidelbergEspira[img].title}</span>}
+                {captions.HeidelbergEspira?.[img]?.description && <span class="photo-gallery__caption-desc">{captions.HeidelbergEspira[img].description}</span>}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div class="photo-gallery__counter" aria-live="polite"><span class="photo-gallery__counter-current">1</span><span class="photo-gallery__counter-sep">/</span><span class="photo-gallery__counter-total">{heidelbergEspiraPhotos.length + 1}</span></div>
+      </div>
+      <button id="prev-heidelberg" class="swiper-button-prev photo-gallery__nav photo-gallery__nav--prev" aria-label="Foto anterior"></button>
+      <button id="next-heidelberg" class="swiper-button-next photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
+    </div>
+
+    <!-- Frankfurt -->
+    <div class="section photo-gallery__section" data-anchor="frankfurt">
+      <div class="swiper photo-gallery__carousel" id="swiper-frankfurt">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide photo-gallery__slide photo-gallery__slide--intro">
+            <div class="photo-gallery__intro">
+              <h2 class="photo-gallery__intro-heading">FRANKFURT</h2>
+              <p class="photo-gallery__intro-tagline">Alemania</p>
+            </div>
+          </div>
+          {frankfurtPhotos.map((img, i) => (
+            <div class="swiper-slide photo-gallery__slide">
+              <div class="photo-gallery__slide-media">
+                <img class="photo-gallery__image" src={`${import.meta.env.BASE_URL}Europa/frankfurt/${img}`} alt={`Frankfurt — ${img.replace(/\.\w+$/, '').replace(/-/g, ' ')}`} loading={i === 0 ? 'eager' : 'lazy'} decoding={i === 0 ? 'sync' : 'async'} />
+              </div>
+              <div class="photo-gallery__caption">
+                {captions.Frankfurt?.[img]?.title && <span class="photo-gallery__caption-title">{captions.Frankfurt[img].title}</span>}
+                {captions.Frankfurt?.[img]?.description && <span class="photo-gallery__caption-desc">{captions.Frankfurt[img].description}</span>}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div class="photo-gallery__counter" aria-live="polite"><span class="photo-gallery__counter-current">1</span><span class="photo-gallery__counter-sep">/</span><span class="photo-gallery__counter-total">{frankfurtPhotos.length + 1}</span></div>
+      </div>
+      <button id="prev-frankfurt" class="swiper-button-prev photo-gallery__nav photo-gallery__nav--prev" aria-label="Foto anterior"></button>
+      <button id="next-frankfurt" class="swiper-button-next photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
+    </div>
+
+    <!-- Maguncia -->
+    <div class="section photo-gallery__section" data-anchor="maguncia">
+      <div class="swiper photo-gallery__carousel" id="swiper-maguncia">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide photo-gallery__slide photo-gallery__slide--intro">
+            <div class="photo-gallery__intro">
+              <h2 class="photo-gallery__intro-heading">MAGUNCIA</h2>
+              <p class="photo-gallery__intro-tagline">Alemania</p>
+            </div>
+          </div>
+          {magunciaPhotos.map((img, i) => (
+            <div class="swiper-slide photo-gallery__slide">
+              <div class="photo-gallery__slide-media">
+                <img class="photo-gallery__image" src={`${import.meta.env.BASE_URL}Europa/maguncia/${img}`} alt={`Maguncia — ${img.replace(/\.\w+$/, '').replace(/-/g, ' ')}`} loading={i === 0 ? 'eager' : 'lazy'} decoding={i === 0 ? 'sync' : 'async'} />
+              </div>
+              <div class="photo-gallery__caption">
+                {captions.Maguncia?.[img]?.title && <span class="photo-gallery__caption-title">{captions.Maguncia[img].title}</span>}
+                {captions.Maguncia?.[img]?.description && <span class="photo-gallery__caption-desc">{captions.Maguncia[img].description}</span>}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div class="photo-gallery__counter" aria-live="polite"><span class="photo-gallery__counter-current">1</span><span class="photo-gallery__counter-sep">/</span><span class="photo-gallery__counter-total">{magunciaPhotos.length + 1}</span></div>
+      </div>
+      <button id="prev-maguncia" class="swiper-button-prev photo-gallery__nav photo-gallery__nav--prev" aria-label="Foto anterior"></button>
+      <button id="next-maguncia" class="swiper-button-next photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
+    </div>
+
+    <!-- Rüdesheim -->
+    <div class="section photo-gallery__section" data-anchor="rudesheim">
+      <div class="swiper photo-gallery__carousel" id="swiper-rudesheim">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide photo-gallery__slide photo-gallery__slide--intro">
+            <div class="photo-gallery__intro">
+              <h2 class="photo-gallery__intro-heading">RÜDESHEIM</h2>
+              <p class="photo-gallery__intro-tagline">Alemania</p>
+            </div>
+          </div>
+          {rudesheiPhotos.map((img, i) => (
+            <div class="swiper-slide photo-gallery__slide">
+              <div class="photo-gallery__slide-media">
+                <img class="photo-gallery__image" src={`${import.meta.env.BASE_URL}Europa/rudesheim/${img}`} alt={`Rüdesheim — ${img.replace(/\.\w+$/, '').replace(/-/g, ' ')}`} loading={i === 0 ? 'eager' : 'lazy'} decoding={i === 0 ? 'sync' : 'async'} />
+              </div>
+              <div class="photo-gallery__caption">
+                {captions.Rudesheim?.[img]?.title && <span class="photo-gallery__caption-title">{captions.Rudesheim[img].title}</span>}
+                {captions.Rudesheim?.[img]?.description && <span class="photo-gallery__caption-desc">{captions.Rudesheim[img].description}</span>}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div class="photo-gallery__counter" aria-live="polite"><span class="photo-gallery__counter-current">1</span><span class="photo-gallery__counter-sep">/</span><span class="photo-gallery__counter-total">{rudesheiPhotos.length + 1}</span></div>
+      </div>
+      <button id="prev-rudesheim" class="swiper-button-prev photo-gallery__nav photo-gallery__nav--prev" aria-label="Foto anterior"></button>
+      <button id="next-rudesheim" class="swiper-button-next photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
+    </div>
+
+    <!-- Coblenza -->
+    <div class="section photo-gallery__section" data-anchor="coblenza">
+      <div class="swiper photo-gallery__carousel" id="swiper-coblenza">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide photo-gallery__slide photo-gallery__slide--intro">
+            <div class="photo-gallery__intro">
+              <h2 class="photo-gallery__intro-heading">COBLENZA</h2>
+              <p class="photo-gallery__intro-tagline">Alemania</p>
+            </div>
+          </div>
+          {coblenzaPhotos.map((img, i) => (
+            <div class="swiper-slide photo-gallery__slide">
+              <div class="photo-gallery__slide-media">
+                <img class="photo-gallery__image" src={`${import.meta.env.BASE_URL}Europa/coblenza/${img}`} alt={`Coblenza — ${img.replace(/\.\w+$/, '').replace(/-/g, ' ')}`} loading={i === 0 ? 'eager' : 'lazy'} decoding={i === 0 ? 'sync' : 'async'} />
+              </div>
+              <div class="photo-gallery__caption">
+                {captions.Coblenza?.[img]?.title && <span class="photo-gallery__caption-title">{captions.Coblenza[img].title}</span>}
+                {captions.Coblenza?.[img]?.description && <span class="photo-gallery__caption-desc">{captions.Coblenza[img].description}</span>}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div class="photo-gallery__counter" aria-live="polite"><span class="photo-gallery__counter-current">1</span><span class="photo-gallery__counter-sep">/</span><span class="photo-gallery__counter-total">{coblenzaPhotos.length + 1}</span></div>
+      </div>
+      <button id="prev-coblenza" class="swiper-button-prev photo-gallery__nav photo-gallery__nav--prev" aria-label="Foto anterior"></button>
+      <button id="next-coblenza" class="swiper-button-next photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
+    </div>
+
+    <!-- Linz am Rhein -->
+    <div class="section photo-gallery__section" data-anchor="linz-am-rhein">
+      <div class="swiper photo-gallery__carousel" id="swiper-linz-am-rhein">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide photo-gallery__slide photo-gallery__slide--intro">
+            <div class="photo-gallery__intro">
+              <h2 class="photo-gallery__intro-heading">LINZ AM RHEIN</h2>
+              <p class="photo-gallery__intro-tagline">Alemania</p>
+            </div>
+          </div>
+          {linzAmRheinPhotos.map((img, i) => (
+            <div class="swiper-slide photo-gallery__slide">
+              <div class="photo-gallery__slide-media">
+                <img class="photo-gallery__image" src={`${import.meta.env.BASE_URL}Europa/linz-am-rhein/${img}`} alt={`Linz am Rhein — ${img.replace(/\.\w+$/, '').replace(/-/g, ' ')}`} loading={i === 0 ? 'eager' : 'lazy'} decoding={i === 0 ? 'sync' : 'async'} />
+              </div>
+              <div class="photo-gallery__caption">
+                {captions.LinzAmRhein?.[img]?.title && <span class="photo-gallery__caption-title">{captions.LinzAmRhein[img].title}</span>}
+                {captions.LinzAmRhein?.[img]?.description && <span class="photo-gallery__caption-desc">{captions.LinzAmRhein[img].description}</span>}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div class="photo-gallery__counter" aria-live="polite"><span class="photo-gallery__counter-current">1</span><span class="photo-gallery__counter-sep">/</span><span class="photo-gallery__counter-total">{linzAmRheinPhotos.length + 1}</span></div>
+      </div>
+      <button id="prev-linz-am-rhein" class="swiper-button-prev photo-gallery__nav photo-gallery__nav--prev" aria-label="Foto anterior"></button>
+      <button id="next-linz-am-rhein" class="swiper-button-next photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
+    </div>
+
+    <!-- Cochem -->
+    <div class="section photo-gallery__section" data-anchor="cochem">
+      <div class="swiper photo-gallery__carousel" id="swiper-cochem">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide photo-gallery__slide photo-gallery__slide--intro">
+            <div class="photo-gallery__intro">
+              <h2 class="photo-gallery__intro-heading">COCHEM</h2>
+              <p class="photo-gallery__intro-tagline">Alemania</p>
+            </div>
+          </div>
+          {cochemPhotos.map((img, i) => (
+            <div class="swiper-slide photo-gallery__slide">
+              <div class="photo-gallery__slide-media">
+                <img class="photo-gallery__image" src={`${import.meta.env.BASE_URL}Europa/cochem/${img}`} alt={`Cochem — ${img.replace(/\.\w+$/, '').replace(/-/g, ' ')}`} loading={i === 0 ? 'eager' : 'lazy'} decoding={i === 0 ? 'sync' : 'async'} />
+              </div>
+              <div class="photo-gallery__caption">
+                {captions.Cochem?.[img]?.title && <span class="photo-gallery__caption-title">{captions.Cochem[img].title}</span>}
+                {captions.Cochem?.[img]?.description && <span class="photo-gallery__caption-desc">{captions.Cochem[img].description}</span>}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div class="photo-gallery__counter" aria-live="polite"><span class="photo-gallery__counter-current">1</span><span class="photo-gallery__counter-sep">/</span><span class="photo-gallery__counter-total">{cochemPhotos.length + 1}</span></div>
+      </div>
+      <button id="prev-cochem" class="swiper-button-prev photo-gallery__nav photo-gallery__nav--prev" aria-label="Foto anterior"></button>
+      <button id="next-cochem" class="swiper-button-next photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
+    </div>
+
+    <!-- Colonia y Bonn -->
+    <div class="section photo-gallery__section" data-anchor="colonia-bonn">
+      <div class="swiper photo-gallery__carousel" id="swiper-colonia-bonn">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide photo-gallery__slide photo-gallery__slide--intro">
+            <div class="photo-gallery__intro">
+              <h2 class="photo-gallery__intro-heading">COLONIA</h2>
+              <p class="photo-gallery__intro-tagline">y Bonn</p>
+            </div>
+          </div>
+          {coloniaPhotos.map((img, i) => (
+            <div class="swiper-slide photo-gallery__slide">
+              <div class="photo-gallery__slide-media">
+                <img class="photo-gallery__image" src={`${import.meta.env.BASE_URL}Europa/colonia-bonn/${img}`} alt={`Colonia Bonn — ${img.replace(/\.\w+$/, '').replace(/-/g, ' ')}`} loading={i === 0 ? 'eager' : 'lazy'} decoding={i === 0 ? 'sync' : 'async'} />
+              </div>
+              <div class="photo-gallery__caption">
+                {captions.Colonia?.[img]?.title && <span class="photo-gallery__caption-title">{captions.Colonia[img].title}</span>}
+                {captions.Colonia?.[img]?.description && <span class="photo-gallery__caption-desc">{captions.Colonia[img].description}</span>}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div class="photo-gallery__counter" aria-live="polite"><span class="photo-gallery__counter-current">1</span><span class="photo-gallery__counter-sep">/</span><span class="photo-gallery__counter-total">{coloniaPhotos.length + 1}</span></div>
+      </div>
+      <button id="prev-colonia-bonn" class="swiper-button-prev photo-gallery__nav photo-gallery__nav--prev" aria-label="Foto anterior"></button>
+      <button id="next-colonia-bonn" class="swiper-button-next photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
+    </div>
+
+    <!-- Düsseldorf -->
+    <div class="section photo-gallery__section" data-anchor="dusseldorf">
+      <div class="swiper photo-gallery__carousel" id="swiper-dusseldorf">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide photo-gallery__slide photo-gallery__slide--intro">
+            <div class="photo-gallery__intro">
+              <h2 class="photo-gallery__intro-heading">DÜSSELDORF</h2>
+              <p class="photo-gallery__intro-tagline">Alemania</p>
+            </div>
+          </div>
+          {dusseldorfPhotos.map((img, i) => (
+            <div class="swiper-slide photo-gallery__slide">
+              <div class="photo-gallery__slide-media">
+                <img class="photo-gallery__image" src={`${import.meta.env.BASE_URL}Europa/dusseldorf/${img}`} alt={`Düsseldorf — ${img.replace(/\.\w+$/, '').replace(/-/g, ' ')}`} loading={i === 0 ? 'eager' : 'lazy'} decoding={i === 0 ? 'sync' : 'async'} />
+              </div>
+              <div class="photo-gallery__caption">
+                {captions.Dusseldorf?.[img]?.title && <span class="photo-gallery__caption-title">{captions.Dusseldorf[img].title}</span>}
+                {captions.Dusseldorf?.[img]?.description && <span class="photo-gallery__caption-desc">{captions.Dusseldorf[img].description}</span>}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div class="photo-gallery__counter" aria-live="polite"><span class="photo-gallery__counter-current">1</span><span class="photo-gallery__counter-sep">/</span><span class="photo-gallery__counter-total">{dusseldorfPhotos.length + 1}</span></div>
+      </div>
+      <button id="prev-dusseldorf" class="swiper-button-prev photo-gallery__nav photo-gallery__nav--prev" aria-label="Foto anterior"></button>
+      <button id="next-dusseldorf" class="swiper-button-next photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
+    </div>
+
+    <!-- Amsterdam -->
+    <div class="section photo-gallery__section" data-anchor="amsterdam">
+      <div class="swiper photo-gallery__carousel" id="swiper-amsterdam">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide photo-gallery__slide photo-gallery__slide--intro">
+            <div class="photo-gallery__intro">
+              <h2 class="photo-gallery__intro-heading">AMSTERDAM</h2>
+              <p class="photo-gallery__intro-tagline">Países Bajos</p>
+            </div>
+          </div>
+          {amsterdamPhotos.map((img, i) => (
+            <div class="swiper-slide photo-gallery__slide">
+              <div class="photo-gallery__slide-media">
+                <img class="photo-gallery__image" src={`${import.meta.env.BASE_URL}Europa/amsterdam/${img}`} alt={`Amsterdam — ${img.replace(/\.\w+$/, '').replace(/-/g, ' ')}`} loading={i === 0 ? 'eager' : 'lazy'} decoding={i === 0 ? 'sync' : 'async'} />
+              </div>
+              <div class="photo-gallery__caption">
+                {captions.Amsterdam?.[img]?.title && <span class="photo-gallery__caption-title">{captions.Amsterdam[img].title}</span>}
+                {captions.Amsterdam?.[img]?.description && <span class="photo-gallery__caption-desc">{captions.Amsterdam[img].description}</span>}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div class="photo-gallery__counter" aria-live="polite"><span class="photo-gallery__counter-current">1</span><span class="photo-gallery__counter-sep">/</span><span class="photo-gallery__counter-total">{amsterdamPhotos.length + 1}</span></div>
+      </div>
+      <button id="prev-amsterdam" class="swiper-button-prev photo-gallery__nav photo-gallery__nav--prev" aria-label="Foto anterior"></button>
+      <button id="next-amsterdam" class="swiper-button-next photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
+    </div>
+
+  </div>
+
+  <nav class="section-nav" aria-label="Secciones">
+    <button class="section-nav__item section-nav__item--active" data-anchor="basilea"       data-label="Basilea"       aria-label="Ir a Basilea"></button>
+    <button class="section-nav__item" data-anchor="estrasburgo"   data-label="Estrasburgo"   aria-label="Ir a Estrasburgo"></button>
+    <button class="section-nav__item" data-anchor="breisach"      data-label="Breisach"      aria-label="Ir a Breisach"></button>
+    <button class="section-nav__item" data-anchor="rin-romantico" data-label="Rin Romántico" aria-label="Ir a Rin Romántico"></button>
+    <button class="section-nav__item" data-anchor="worms"         data-label="Worms"         aria-label="Ir a Worms"></button>
+    <button class="section-nav__item" data-anchor="heidelberg"    data-label="Heidelberg"    aria-label="Ir a Heidelberg"></button>
+    <button class="section-nav__item" data-anchor="frankfurt"     data-label="Frankfurt"     aria-label="Ir a Frankfurt"></button>
+    <button class="section-nav__item" data-anchor="maguncia"      data-label="Maguncia"      aria-label="Ir a Maguncia"></button>
+    <button class="section-nav__item" data-anchor="rudesheim"     data-label="Rüdesheim"     aria-label="Ir a Rüdesheim"></button>
+    <button class="section-nav__item" data-anchor="coblenza"      data-label="Coblenza"      aria-label="Ir a Coblenza"></button>
+    <button class="section-nav__item" data-anchor="linz-am-rhein" data-label="Linz am Rhein" aria-label="Ir a Linz am Rhein"></button>
+    <button class="section-nav__item" data-anchor="cochem"        data-label="Cochem"        aria-label="Ir a Cochem"></button>
+    <button class="section-nav__item" data-anchor="colonia-bonn"  data-label="Colonia · Bonn" aria-label="Ir a Colonia y Bonn"></button>
+    <button class="section-nav__item" data-anchor="dusseldorf"    data-label="Düsseldorf"    aria-label="Ir a Düsseldorf"></button>
+    <button class="section-nav__item" data-anchor="amsterdam"     data-label="Amsterdam"     aria-label="Ir a Amsterdam"></button>
+  </nav>
+</Layout>
+
+<style>
+  :root {
+    --swiper-theme-color: #ffffff;
+    --swiper-navigation-color: rgba(255, 255, 255, 0.85);
+    --swiper-navigation-size: 36px;
+    --swiper-navigation-sides-offset: 24px;
+    --caption-height: 80px;
+    --header-height: 60px;
+    --nav-col-width: 160px;
+    --left-margin: 80px;
+  }
+
+  .site-header {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: var(--header-height);
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px 0 32px;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, transparent 100%);
+    pointer-events: none;
+  }
+  .site-header__brand { display: flex; align-items: baseline; gap: 10px; }
+  @keyframes brand-leave { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-7px); } }
+  @keyframes brand-enter { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: translateY(0); } }
+  .site-header__brand--leaving { animation: brand-leave 0.22s ease forwards; }
+  .site-header__brand--entering { animation: brand-enter 0.28s ease forwards; }
+  .site-header__title { font-family: 'Helvetica Neue', Arial, sans-serif; font-weight: 700; font-size: 0.95rem; letter-spacing: 0.24em; text-transform: uppercase; color: #ffffff; text-shadow: 0 1px 8px rgba(0,0,0,0.5); }
+  .site-header__sub { font-family: 'Georgia', serif; font-style: italic; font-size: 0.72rem; letter-spacing: 0.08em; color: rgba(255,255,255,0.7); text-shadow: 0 1px 6px rgba(0,0,0,0.5); }
+  .site-header__menu-btn {
+    pointer-events: all; background: none; border: none; cursor: pointer;
+    display: flex; flex-direction: column; gap: 5px; padding: 8px;
+    span { display: block; width: 22px; height: 2px; background: rgba(255,255,255,0.85); border-radius: 1px; transition: background 0.2s; }
+    &:hover span { background: #ffffff; }
+  }
+
+  .section-nav {
+    position: fixed; right: 0; width: var(--nav-col-width);
+    top: 50%; transform: translateY(-50%);
+    z-index: 50; display: flex; flex-direction: column; gap: 10px; align-items: center;
+  }
+  .section-nav__item {
+    position: relative; width: 8px; height: 8px; border-radius: 50%;
+    border: none; cursor: pointer; background: rgba(255,255,255,0.3);
+    transition: background 0.3s ease, transform 0.2s ease; padding: 0;
+    &::before {
+      content: attr(data-label); position: absolute;
+      right: calc(100% + 14px); top: 50%;
+      transform: translateY(-50%) translateX(6px);
+      background: rgba(0,0,0,0.5); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+      color: rgba(255,255,255,0.88); font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 0.58rem; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase;
+      white-space: nowrap; padding: 4px 10px; border-radius: 3px;
+      pointer-events: none; opacity: 0; transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+    &:hover::before { opacity: 1; transform: translateY(-50%) translateX(0); }
+    &:hover { background: rgba(255,255,255,0.65); transform: scale(1.25); }
+    &.section-nav__item--active { background: #ffffff; transform: scale(1.2); box-shadow: 0 0 6px rgba(255,255,255,0.5); }
+  }
+
+  :global(.fp-watermark) { display: none; }
+  :global(#fp-nav ul li a span), :global(#fp-nav ul li:hover a span) { background: rgba(255,255,255,0.7); box-shadow: 0 0 0 1.5px rgba(0,0,0,0.35), 0 1px 6px rgba(0,0,0,0.5); }
+  :global(#fp-nav ul li a.active span) { background: #ffffff; width: 10px; height: 10px; margin: -5px 0 0 -5px; box-shadow: 0 0 0 1.5px rgba(0,0,0,0.25), 0 2px 8px rgba(0,0,0,0.6); }
+  :global(#fp-nav .fp-tooltip) { color: #ffffff; font-family: 'Georgia', serif; font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; text-shadow: 0 1px 4px rgba(0,0,0,0.7); }
+  :global(.fp-section.photo-gallery__section) { background: #000; }
+
+  .photo-gallery {
+    .photo-gallery__carousel {
+      position: relative; width: 1000px;
+      margin-left: calc((100% - var(--nav-col-width) - 1000px) / 2);
+      height: calc(100vh - var(--header-height) - 120px);
+      margin-top: calc(var(--header-height) + 56px);
+      --swiper-navigation-top-offset: calc(50% - calc(var(--caption-height) / 2));
+    }
+    .photo-gallery__slide {
+      height: 100%; overflow: hidden;
+      &.photo-gallery__slide--intro { display: flex; align-items: center; justify-content: center; background: #000; }
+      &:not(.photo-gallery__slide--intro) { display: flex; flex-direction: column; }
+    }
+    .photo-gallery__slide-media { flex: 1; min-height: 0; overflow: hidden; position: relative; background: #000; }
+    .photo-gallery__image { display: block; width: 100%; height: 100%; object-fit: contain; object-position: center; user-select: none; -webkit-user-drag: none; pointer-events: none; }
+    .photo-gallery__caption { height: var(--caption-height); flex-shrink: 0; display: flex; flex-direction: column; justify-content: center; gap: 3px; padding: 0 48px; background: #000; }
+    .photo-gallery__caption-title { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.62rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.4); }
+    .photo-gallery__caption-desc { font-family: 'Georgia', 'Times New Roman', serif; font-size: 0.82rem; font-style: italic; letter-spacing: 0.06em; color: rgba(255,255,255,0.75); }
+    .photo-gallery__carousel::after {
+      content: ''; position: absolute; inset: 0 0 var(--caption-height) 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.15) 30%, rgba(0,0,0,0) 60%);
+      z-index: 10; pointer-events: none; opacity: 1; transition: opacity 0.3s ease;
+    }
+    .photo-gallery__carousel--intro-active {
+      &::after { opacity: 0; }
+      .photo-gallery__nav { --swiper-navigation-color: rgba(122,173,223,0.7); }
+    }
+    .photo-gallery__counter { position: absolute; bottom: calc(var(--caption-height) + 12px); right: 48px; z-index: 20; color: rgba(255,255,255,0.65); font-family: 'Georgia', serif; font-size: 0.8rem; letter-spacing: 0.12em; pointer-events: none; transition: color 0.3s ease; }
+    .photo-gallery__carousel--intro-active .photo-gallery__counter { color: rgba(122,173,223,0.8); }
+    .photo-gallery__counter-sep { margin: 0 4px; }
+    .photo-gallery__nav {
+      position: absolute; bottom: 16px; background: none; border: none; padding: 0;
+      cursor: pointer; z-index: 30; opacity: 0.85; filter: drop-shadow(0 1px 4px rgba(0,0,0,0.8)); transition: opacity 0.2s ease;
+      &.photo-gallery__nav--prev { left: calc(var(--left-margin) + 8px); }
+      &.photo-gallery__nav--next { right: calc(var(--nav-col-width) + 8px); left: auto; }
+      &:hover { opacity: 1; }
+    }
+    .photo-gallery__intro { text-align: center; padding: 2rem; max-width: 700px; }
+    .photo-gallery__intro-heading { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: clamp(1.8rem, 5vw, 3.5rem); font-weight: 400; color: #7aaddf; letter-spacing: 0.04em; margin: 0; line-height: 1; }
+    .photo-gallery__intro-tagline { font-family: 'Georgia', 'Times New Roman', serif; font-style: italic; font-size: clamp(1rem, 2vw, 1.35rem); color: #7aaddf; margin: 0.5em 0 0; }
+  }
+
+  .country-nav {
+    position: fixed; top: 0; right: 0; width: 200px; height: 100%;
+    background: rgba(0,0,0,0.88); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    transform: translateX(100%); transition: transform 0.3s ease; z-index: 200;
+    padding: 4rem 2rem; box-sizing: border-box;
+    &.is-open { transform: translateX(0); }
+  }
+  .country-nav__backdrop { position: fixed; inset: 0; z-index: 199; display: none; &.is-open { display: block; } }
+  .country-nav__list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 4px; }
+  .country-nav__link {
+    display: block; padding: 0.75rem 0; color: rgba(255,255,255,0.45); text-decoration: none;
+    font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.6rem; font-weight: 600;
+    letter-spacing: 0.28em; text-transform: uppercase; transition: color 0.2s ease;
+    &[data-current] { color: #ffffff; }
+    &:hover { color: rgba(255,255,255,0.85); }
+  }
+  .country-nav__separator {
+    padding: 0.75rem 0 0.25rem; margin-top: 0.5rem;
+    color: rgba(255,255,255,0.25); font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.5rem; font-weight: 600; letter-spacing: 0.3em; text-transform: uppercase;
+    border-top: 1px solid rgba(255,255,255,0.1); list-style: none;
+  }
+
+  @media (max-width: 768px) {
+    .site-header { padding: 0 16px 0 20px; }
+    .section-nav { right: 12px; left: auto; top: 50%; bottom: auto; transform: translateY(-50%); flex-direction: column; width: auto; gap: 8px; }
+    .section-nav__item { width: 6px; height: 6px; &.section-nav__item--active { transform: scale(1.2); } }
+    .photo-gallery {
+      .photo-gallery__carousel { width: 100%; margin-left: 0; height: calc(100dvh - var(--header-height) - 40px); margin-top: calc(var(--header-height) + 8px); }
+      .photo-gallery__nav { display: none; }
+      .photo-gallery__caption { padding: 0 20px; }
+    }
+  }
+</style>
+
+<script>
+  import fullpage from 'fullpage.js';
+  import Swiper from 'swiper';
+  import { Navigation, Keyboard } from 'swiper/modules';
+
+  const SECTIONS = [
+    { anchor: 'basilea',       label: 'Basilea',       title: 'BASILEA',       sub: 'Suiza'        },
+    { anchor: 'estrasburgo',   label: 'Estrasburgo',   title: 'ESTRASBURGO',   sub: 'y Colmar'     },
+    { anchor: 'breisach',      label: 'Breisach',      title: 'BREISACH',      sub: 'Alemania'     },
+    { anchor: 'rin-romantico', label: 'Rin Romántico', title: 'RIN ROMÁNTICO', sub: ''             },
+    { anchor: 'worms',         label: 'Worms',         title: 'WORMS',         sub: 'Alemania'     },
+    { anchor: 'heidelberg',    label: 'Heidelberg',    title: 'HEIDELBERG',    sub: 'y Espira'     },
+    { anchor: 'frankfurt',     label: 'Frankfurt',     title: 'FRANKFURT',     sub: 'Alemania'     },
+    { anchor: 'maguncia',      label: 'Maguncia',      title: 'MAGUNCIA',      sub: 'Alemania'     },
+    { anchor: 'rudesheim',     label: 'Rüdesheim',     title: 'RÜDESHEIM',     sub: 'Alemania'     },
+    { anchor: 'coblenza',      label: 'Coblenza',      title: 'COBLENZA',      sub: 'Alemania'     },
+    { anchor: 'linz-am-rhein', label: 'Linz am Rhein', title: 'LINZ AM RHEIN', sub: 'Alemania'     },
+    { anchor: 'cochem',        label: 'Cochem',        title: 'COCHEM',        sub: 'Alemania'     },
+    { anchor: 'colonia-bonn',  label: 'Colonia',       title: 'COLONIA',       sub: 'y Bonn'       },
+    { anchor: 'dusseldorf',    label: 'Düsseldorf',    title: 'DÜSSELDORF',    sub: 'Alemania'     },
+    { anchor: 'amsterdam',     label: 'Amsterdam',     title: 'AMSTERDAM',     sub: 'Países Bajos' },
+  ];
+
+  function updateSectionUI(anchor: string): void {
+    const section = SECTIONS.find(s => s.anchor === anchor);
+    if (!section) return;
+    const titleEl = document.getElementById('js-section-title');
+    const subEl   = document.getElementById('js-section-sub');
+    if (titleEl) titleEl.textContent = section.title;
+    if (subEl)   subEl.textContent   = section.sub;
+    document.querySelectorAll<HTMLElement>('.section-nav__item').forEach(item => {
+      item.classList.toggle('section-nav__item--active', item.dataset.anchor === anchor);
+    });
+  }
+
+  function updateCounter(swiper: InstanceType<typeof Swiper>): void {
+    const current = swiper.el.querySelector<HTMLElement>('.photo-gallery__counter-current');
+    if (current) current.textContent = String(swiper.activeIndex + 1);
+  }
+
+  function updateIntroState(swiper: InstanceType<typeof Swiper>): void {
+    swiper.el.classList.toggle('photo-gallery__carousel--intro-active', swiper.activeIndex === 0);
+  }
+
+  function makeHandlers(anchor: string) {
+    return {
+      init(this: InstanceType<typeof Swiper>) { updateCounter(this); updateIntroState(this); },
+      slideChange(this: InstanceType<typeof Swiper>) { savedIndex[anchor] = this.activeIndex; updateCounter(this); updateIntroState(this); },
+    };
+  }
+
+  const brand = document.querySelector<HTMLElement>('.site-header__brand');
+  function animateBrandLeave(): void { brand?.classList.remove('site-header__brand--entering'); brand?.classList.add('site-header__brand--leaving'); }
+  function animateBrandEnter(): void { brand?.classList.remove('site-header__brand--leaving'); brand?.classList.add('site-header__brand--entering'); }
+
+  const savedIndex: Record<string, number> = {};
+  const swipers: Record<string, InstanceType<typeof Swiper>> = {};
+
+  for (const { anchor } of SECTIONS) {
+    savedIndex[anchor] = 0;
+    swipers[anchor] = new Swiper(`#swiper-${anchor}`, {
+      modules: [Navigation, Keyboard],
+      direction: 'horizontal',
+      touchReleaseOnEdges: true,
+      resistanceRatio: 0,
+      navigation: { prevEl: `#prev-${anchor}`, nextEl: `#next-${anchor}` },
+      keyboard: { enabled: true, onlyInViewport: true },
+      a11y: { enabled: true },
+      preloadImages: false,
+      on: makeHandlers(anchor),
+    });
+    swipers[anchor].disable();
+  }
+
+  swipers[SECTIONS[0].anchor].enable();
+  updateSectionUI(SECTIONS[0].anchor);
+
+  new fullpage('#fullpage', {
+    autoScrolling: true,
+    fitToSection: true,
+    navigation: false,
+    anchors: SECTIONS.map(s => s.anchor),
+    scrollingSpeed: 700,
+    keyboardScrolling: true,
+    onLeave() { Object.values(swipers).forEach(s => s.disable()); animateBrandLeave(); },
+    afterLoad(_origin: unknown, destination: { anchor: string }) {
+      const swiper = swipers[destination.anchor];
+      swiper.enable();
+      swiper.slideTo(savedIndex[destination.anchor], 0);
+      updateSectionUI(destination.anchor);
+      animateBrandEnter();
+    },
+  });
+
+  document.querySelectorAll<HTMLButtonElement>('.section-nav__item').forEach(item => {
+    item.addEventListener('click', () => { if (item.dataset.anchor) (window as any).fullpage_api?.moveTo(item.dataset.anchor); });
+  });
+
+  const currentCountry = 'europa-rin';
+  const menuBtn    = document.getElementById('js-menu-btn');
+  const countryNav = document.getElementById('js-country-nav');
+  const backdrop   = document.getElementById('js-country-nav-backdrop');
+
+  function openMenu(): void { countryNav?.classList.add('is-open'); backdrop?.classList.add('is-open'); countryNav?.setAttribute('aria-hidden', 'false'); menuBtn?.setAttribute('aria-expanded', 'true'); }
+  function closeMenu(): void { countryNav?.classList.remove('is-open'); backdrop?.classList.remove('is-open'); countryNav?.setAttribute('aria-hidden', 'true'); menuBtn?.setAttribute('aria-expanded', 'false'); }
+
+  menuBtn?.addEventListener('click', () => { countryNav?.classList.contains('is-open') ? closeMenu() : openMenu(); });
+  backdrop?.addEventListener('click', closeMenu);
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMenu(); });
+
+  document.querySelector<HTMLElement>(`[data-country="${currentCountry}"]`)?.setAttribute('data-current', '');
+</script>
