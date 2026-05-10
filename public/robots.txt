@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://adondevoy.com.ar/sitemap-index.xml

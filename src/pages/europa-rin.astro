@@ -65,9 +65,26 @@ const captions: Record<string, Record<string, CaptionEntry>> = {
 };
 
 const currentCountry = 'europa-rin';
+
+const siteBase = 'https://adondevoy.com.ar';
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ImageGallery',
+  name: 'Crucero por el Rin — Fotografía de viajes',
+  description: 'Galería fotográfica del Crucero por el Rin: Basilea, Estrasburgo, Heidelberg, Colonia, Düsseldorf, Ámsterdam y más. Fotografías de Orlando Moure.',
+  author: { '@type': 'Person', name: 'Orlando Moure', url: siteBase },
+  url: `${siteBase}/europa-rin`,
+};
 ---
 
-<Layout>
+<Layout
+  title="Crucero por el Rin — Fotografía de viajes"
+  description="Galería fotográfica del Crucero por el Rin: Basilea, Estrasburgo, Heidelberg, Colonia, Düsseldorf, Ámsterdam y más. Fotografías de Orlando Moure."
+  canonical={`${siteBase}/europa-rin`}
+  ogImage={`${siteBase}/Europa/frankfurt/00.webp`}
+  pageHeading="Crucero por el Rin — Fotografía de viajes"
+  jsonLd={jsonLd}
+>
   <header class="site-header" id="js-site-header">
     <div class="site-header__brand">
       <span class="site-header__title" id="js-section-title">BASILEA</span>

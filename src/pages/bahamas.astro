@@ -37,9 +37,26 @@ const captions: Record<string, Record<string, CaptionEntry>> = {
 };
 
 const currentCountry = 'bahamas';
+
+const siteBase = 'https://adondevoy.com.ar';
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ImageGallery',
+  name: 'Bahamas — Fotografía de viajes',
+  description: 'Galería fotográfica de Bahamas: paisajes del Caribe. Fotografías de Orlando Moure.',
+  author: { '@type': 'Person', name: 'Orlando Moure', url: siteBase },
+  url: `${siteBase}/bahamas`,
+};
 ---
 
-<Layout>
+<Layout
+  title="Bahamas — Fotografía de viajes"
+  description="Galería fotográfica de Bahamas: paisajes del Caribe. Fotografías de Orlando Moure."
+  canonical={`${siteBase}/bahamas`}
+  ogImage={`${siteBase}/Bahamas/Bahamas/00.webp`}
+  pageHeading="Bahamas — Fotografía de viajes"
+  jsonLd={jsonLd}
+>
   <header class="site-header" id="js-site-header">
     <div class="site-header__brand">
       <span class="site-header__title" id="js-section-title">BAHAMAS</span>

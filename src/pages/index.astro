@@ -67,11 +67,25 @@ const captions: Record<string, Record<string, CaptionEntry>> = {
 };
 
 const currentCountry = 'argentina';
+
+const siteBase = 'https://adondevoy.com.ar';
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ImageGallery',
+  name: 'Argentina — Fotografía de viajes',
+  description: 'Galería fotográfica de Argentina: Bariloche, Mendoza, Patagonia Austral, Ushuaia, Islas Malvinas, Cataratas del Iguazú y más. Fotografías de Orlando Moure.',
+  author: { '@type': 'Person', name: 'Orlando Moure', url: siteBase },
+  url: siteBase,
+};
 ---
 
 <Layout
   title="Argentina — Fotografía de viajes"
   description="Galería fotográfica de Argentina: Bariloche, Mendoza, Patagonia Austral, Ushuaia, Islas Malvinas, Cataratas del Iguazú y más. Fotografías de Orlando Moure."
+  canonical={siteBase}
+  ogImage={`${siteBase}/Argentina/Bariloche/00.webp`}
+  pageHeading="Argentina — Fotografía de viajes"
+  jsonLd={jsonLd}
 >
   <header class="site-header" id="js-site-header">
     <div class="site-header__brand">

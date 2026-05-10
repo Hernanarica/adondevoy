@@ -57,9 +57,26 @@ const captions: Record<string, Record<string, CaptionEntry>> = {
 };
 
 const currentCountry = 'brasil';
+
+const siteBase = 'https://adondevoy.com.ar';
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ImageGallery',
+  name: 'Brasil — Fotografía de viajes',
+  description: 'Galería fotográfica de Brasil: Río de Janeiro, Salvador, Gramado, Ilha Grande, Búzios, Petrópolis y más. Fotografías de Orlando Moure.',
+  author: { '@type': 'Person', name: 'Orlando Moure', url: siteBase },
+  url: `${siteBase}/brasil`,
+};
 ---
 
-<Layout>
+<Layout
+  title="Brasil — Fotografía de viajes"
+  description="Galería fotográfica de Brasil: Río de Janeiro, Salvador, Gramado, Ilha Grande, Búzios, Petrópolis y más. Fotografías de Orlando Moure."
+  canonical={`${siteBase}/brasil`}
+  ogImage={`${siteBase}/Brasil/SerraVerdeExpress/00.webp`}
+  pageHeading="Brasil — Fotografía de viajes"
+  jsonLd={jsonLd}
+>
   <header class="site-header" id="js-site-header">
     <div class="site-header__brand">
       <span class="site-header__title" id="js-section-title">SERRA VERDE EXPRESS</span>

@@ -53,9 +53,26 @@ const captions: Record<string, Record<string, CaptionEntry>> = {
 };
 
 const currentCountry = 'uruguay';
+
+const siteBase = 'https://adondevoy.com.ar';
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ImageGallery',
+  name: 'Uruguay — Fotografía de viajes',
+  description: 'Galería fotográfica de Uruguay: Montevideo, Punta del Este, Colonia Sacramento, Piriápolis, Carmelo y más. Fotografías de Orlando Moure.',
+  author: { '@type': 'Person', name: 'Orlando Moure', url: siteBase },
+  url: `${siteBase}/uruguay`,
+};
 ---
 
-<Layout>
+<Layout
+  title="Uruguay — Fotografía de viajes"
+  description="Galería fotográfica de Uruguay: Montevideo, Punta del Este, Colonia Sacramento, Piriápolis, Carmelo y más. Fotografías de Orlando Moure."
+  canonical={`${siteBase}/uruguay`}
+  ogImage={`${siteBase}/Uruguay/Piriapolis/00.webp`}
+  pageHeading="Uruguay — Fotografía de viajes"
+  jsonLd={jsonLd}
+>
   <header class="site-header" id="js-site-header">
     <div class="site-header__brand">
       <span class="site-header__title" id="js-section-title">PIRIÁPOLIS</span>

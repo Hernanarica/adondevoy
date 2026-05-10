@@ -69,9 +69,26 @@ const captions: Record<string, Record<string, CaptionEntry>> = {
 };
 
 const currentCountry = 'europa-oeste';
+
+const siteBase = 'https://adondevoy.com.ar';
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ImageGallery',
+  name: 'Europa Occidental — Fotografía de viajes',
+  description: 'Galería fotográfica de Europa Occidental: París, Lucerna, Andalucía, Brujas, Bruselas y más. Fotografías de Orlando Moure.',
+  author: { '@type': 'Person', name: 'Orlando Moure', url: siteBase },
+  url: `${siteBase}/europa-oeste`,
+};
 ---
 
-<Layout>
+<Layout
+  title="Europa Occidental — Fotografía de viajes"
+  description="Galería fotográfica de Europa Occidental: París, Lucerna, Andalucía, Brujas, Bruselas y más. Fotografías de Orlando Moure."
+  canonical={`${siteBase}/europa-oeste`}
+  ogImage={`${siteBase}/Europa/paris/dia2/00.webp`}
+  pageHeading="Europa Occidental — Fotografía de viajes"
+  jsonLd={jsonLd}
+>
   <header class="site-header" id="js-site-header">
     <div class="site-header__brand">
       <span class="site-header__title" id="js-section-title">ANDALUCÍA</span>

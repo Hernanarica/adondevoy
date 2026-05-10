@@ -57,9 +57,25 @@ const captions: Record<string, Record<string, CaptionEntry>> = {
 };
 
 const currentCountry = 'europa-danubio';
+
+const siteBase = 'https://adondevoy.com.ar';
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ImageGallery',
+  name: 'Crucero por el Danubio — Fotografía de viajes',
+  description: 'Galería fotográfica del Crucero por el Danubio: Passau, Linz, Viena, Bratislava, Budapest, Salzburgo y más. Fotografías de Orlando Moure.',
+  author: { '@type': 'Person', name: 'Orlando Moure', url: siteBase },
+  url: `${siteBase}/europa-danubio`,
+};
 ---
 
-<Layout>
+<Layout
+  title="Crucero por el Danubio — Fotografía de viajes"
+  description="Galería fotográfica del Crucero por el Danubio: Passau, Linz, Viena, Bratislava, Budapest, Salzburgo y más. Fotografías de Orlando Moure."
+  canonical={`${siteBase}/europa-danubio`}
+  pageHeading="Crucero por el Danubio — Fotografía de viajes"
+  jsonLd={jsonLd}
+>
   <header class="site-header" id="js-site-header">
     <div class="site-header__brand">
       <span class="site-header__title" id="js-section-title">PASSAU</span>

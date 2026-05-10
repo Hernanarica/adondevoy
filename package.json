@@ -12,6 +12,7 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@astrojs/sitemap": "^3.7.2",
     "astro": "^6.2.2",
     "fullpage.js": "^4.0.41",
     "swiper": "^12.1.4"

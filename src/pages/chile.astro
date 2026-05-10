@@ -55,9 +55,25 @@ const captions: Record<string, Record<string, CaptionEntry>> = {
 };
 
 const currentCountry = 'chile';
+
+const siteBase = 'https://adondevoy.com.ar';
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ImageGallery',
+  name: 'Chile — Fotografía de viajes',
+  description: 'Galería fotográfica de Chile: Valparaíso, Santiago, Torres del Paine, Cabo de Hornos, Patagonia, Punta Arenas y más. Fotografías de Orlando Moure.',
+  author: { '@type': 'Person', name: 'Orlando Moure', url: siteBase },
+  url: `${siteBase}/chile`,
+};
 ---
 
-<Layout>
+<Layout
+  title="Chile — Fotografía de viajes"
+  description="Galería fotográfica de Chile: Valparaíso, Santiago, Torres del Paine, Cabo de Hornos, Patagonia, Punta Arenas y más. Fotografías de Orlando Moure."
+  canonical={`${siteBase}/chile`}
+  pageHeading="Chile — Fotografía de viajes"
+  jsonLd={jsonLd}
+>
   <header class="site-header" id="js-site-header">
     <div class="site-header__brand">
       <span class="site-header__title" id="js-section-title">COQUIMBO Y LA SERENA</span>
