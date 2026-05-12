@@ -999,67 +999,22 @@ const jsonLd = {
 
   /* ─── Section nav (bullets blancos) ─── */
   .section-nav {
-    position: fixed;
-    right: 0;
-    width: var(--nav-col-width);
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 50;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    align-items: center;
+    position: fixed; right: 0; width: var(--nav-col-width);
+    top: 50%; transform: translateY(-50%);
+    z-index: 50; display: flex; flex-direction: column; gap: 4px;
+    align-items: flex-end; padding-right: 24px; box-sizing: border-box;
   }
-
   .section-nav__item {
-    position: relative;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    border: none;
-    cursor: pointer;
-    background: rgba(255,255,255,0.3);
-    transition: background 0.3s ease, transform 0.2s ease;
-    padding: 0;
-
-    &::before {
-      content: attr(data-label);
-      position: absolute;
-      right: calc(100% + 14px);
-      top: 50%;
-      transform: translateY(-50%) translateX(6px);
-      background: rgba(0, 0, 0, 0.5);
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
-      color: rgba(255, 255, 255, 0.88);
-      font-family: 'Helvetica Neue', Arial, sans-serif;
-      font-size: 0.58rem;
-      font-weight: 600;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      white-space: nowrap;
-      padding: 4px 10px;
-      border-radius: 3px;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 0.2s ease, transform 0.2s ease;
-    }
-
-    &:hover::before {
-      opacity: 1;
-      transform: translateY(-50%) translateX(0);
-    }
-
-    &:hover {
-      background: rgba(255,255,255,0.65);
-      transform: scale(1.25);
-    }
-
-    &.section-nav__item--active {
-      background: #ffffff;
-      transform: scale(1.2);
-      box-shadow: 0 0 6px rgba(255,255,255,0.5);
-    }
+    position: relative; background: none; border: none; cursor: pointer; padding: 4px 0;
+    color: rgba(255,255,255,0.4);
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase;
+    white-space: nowrap; text-align: right;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.6);
+    transition: color 0.25s ease;
+    &::before { content: attr(data-label); }
+    &:hover { color: rgba(255,255,255,0.9); }
+    &.section-nav__item--active { color: #ffffff; }
   }
 
   /* ─── fullpage.js watermark ─── */
@@ -1328,7 +1283,7 @@ const jsonLd = {
     color: rgba(255, 255, 255, 0.45);
     text-decoration: none;
     font-family: 'Helvetica Neue', Arial, sans-serif;
-    font-size: 0.6rem;
+    font-size: 11px;
     font-weight: 600;
     letter-spacing: 0.28em;
     text-transform: uppercase;
@@ -1356,24 +1311,12 @@ const jsonLd = {
     }
 
     /* Bullets verticales pegados al margen derecho */
-    .section-nav {
-      right: 12px;
-      left: auto;
-      top: 50%;
-      bottom: auto;
-      transform: translateY(-50%);
-      flex-direction: column;
-      width: auto;
-      gap: 8px;
-    }
-
+    .section-nav { right: 12px; left: auto; top: 50%; bottom: auto; transform: translateY(-50%); flex-direction: column; width: auto; gap: 8px; align-items: center; padding-right: 0; }
     .section-nav__item {
-      width: 6px;
-      height: 6px;
-
-      &.section-nav__item--active {
-        transform: scale(1.2);
-      }
+      width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.3); padding: 0; font-size: 0;
+      &::before { content: none; }
+      &:hover { background: rgba(255,255,255,0.65); transform: scale(1.25); }
+      &.section-nav__item--active { background: #ffffff; transform: scale(1.2); box-shadow: 0 0 6px rgba(255,255,255,0.5); }
     }
 
     .photo-gallery {
