@@ -30,13 +30,23 @@ function getFolderCaptions(folder: string): Record<string, CaptionEntry> {
   }
 }
 
+function getImagesFromCaptions(folder: string): string[] {
+  const jsonPath = join(process.cwd(), 'public', folder, 'fotos.json');
+  try {
+    const data: Array<{ photo: string }> = JSON.parse(readFileSync(jsonPath, 'utf-8'));
+    return data.map(e => e.photo).filter(p => p !== '00.webp');
+  } catch {
+    return [];
+  }
+}
+
 const serraVerdeExpressPhotos       = getImages('Brasil/SerraVerdeExpress');
 const canelaPhotos                  = getImages('Brasil/Canela');
 const maceioIlheusPhotos            = getImages('Brasil/Maceio-Ilheus');
 const salvadorPhotos                = getImages('Brasil/Salvador');
 const guarujaSantosSanPabloPhotos   = getImages('Brasil/Guaruja-Santos-SanPablo');
 const gramadoPhotos                 = getImages('Brasil/Gramado');
-const rioDeJaneiroPhotos            = getImages('Brasil/Rio-de-Janeiro');
+const rioDeJaneiroPhotos            = getImagesFromCaptions('Brasil/Rio-de-Janeiro');
 const petropolisPhotos              = getImages('Brasil/Petropolis');
 const ilhaGrandeIlhabelaPhotos      = getImages('Brasil/IlhaGrande-Ilhabela');
 const portobloBlumenauCamboriuPhotos = getImages('Brasil/Portobelo-Blumenau-Camboriu');
@@ -283,7 +293,7 @@ const jsonLd = {
           {rioDeJaneiroPhotos.map((img, i) => (
             <div class="swiper-slide photo-gallery__slide">
               <div class="photo-gallery__slide-media">
-                <img class="photo-gallery__image" src={`${import.meta.env.BASE_URL}Brasil/Rio-de-Janeiro/${img}`} alt={`Río de Janeiro — ${img.replace(/\.\w+$/, '').replace(/-/g, ' ')}`} loading={i === 0 ? 'eager' : 'lazy'} decoding={i === 0 ? 'sync' : 'async'} />
+                <img class="photo-gallery__image" src={`${import.meta.env.BASE_URL}Brasil/Rio-de-Janeiro/${img}`} alt={`Río de Janeiro — ${img.replace(/^.*\//, '').replace(/\.\w+$/, '').replace(/-/g, ' ')}`} loading={i === 0 ? 'eager' : 'lazy'} decoding={i === 0 ? 'sync' : 'async'} />
               </div>
               <div class="photo-gallery__caption">
                 {captions.RioDeJaneiro?.[img]?.title && <span class="photo-gallery__caption-title">{captions.RioDeJaneiro[img].title}</span>}
