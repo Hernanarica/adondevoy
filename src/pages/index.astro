@@ -15,6 +15,24 @@ function getImages(folder: string): string[] {
     .sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }));
 }
 
+function getImagesRecursive(folder: string): string[] {
+  const root = join(process.cwd(), 'public', folder);
+  const out: string[] = [];
+  function walk(rel: string): void {
+    const abs = rel ? join(root, rel) : root;
+    for (const entry of readdirSync(abs, { withFileTypes: true })) {
+      const child = rel ? `${rel}/${entry.name}` : entry.name;
+      if (entry.isDirectory()) {
+        walk(child);
+      } else if (/\.(jpe?g|png|webp|avif|gif)$/i.test(entry.name) && !/^00\./i.test(entry.name)) {
+        out.push(child);
+      }
+    }
+  }
+  walk('');
+  return out.sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }));
+}
+
 interface CaptionEntry { title?: string; description?: string }
 
 function getFolderCaptions(folder: string): Record<string, CaptionEntry> {
@@ -30,40 +48,77 @@ function getFolderCaptions(folder: string): Record<string, CaptionEntry> {
   }
 }
 
-const barilochePhotos        = getImages('Argentina/Bariloche');
-const mendozaPhotos          = getImages('Argentina/Mendoza');
+function getFolderCaptionsRecursive(folder: string): Record<string, CaptionEntry> {
+  const root = join(process.cwd(), 'public', folder);
+  const out: Record<string, CaptionEntry> = {};
+  function walk(rel: string): void {
+    const abs = rel ? join(root, rel) : root;
+    for (const entry of readdirSync(abs, { withFileTypes: true })) {
+      if (entry.isDirectory()) {
+        walk(rel ? `${rel}/${entry.name}` : entry.name);
+      }
+    }
+    try {
+      const data: Array<{ photo: string; title: string; description: string }> =
+        JSON.parse(readFileSync(join(abs, 'fotos.json'), 'utf-8'));
+      for (const item of data) {
+        const key = rel ? `${rel}/${item.photo}` : item.photo;
+        out[key] = { title: item.title || undefined, description: item.description || undefined };
+      }
+    } catch {}
+  }
+  walk('');
+  return out;
+}
+
+const vanGoghPhotos          = getImages('Argentina/VanGogh');
+const halloweenPhotos        = getImagesRecursive('Argentina/Halloween');
+const messiPhotos            = getImages('Argentina/Messi');
+const steveMcCurryPhotos     = getImages('Argentina/SteveMcCurry');
 const islasMalvinasPhotos    = getImages('Argentina/IslasMalvinas');
-const calafatePhotos         = getImages('Argentina/Calafate');
-const cataratosPhotos        = getImages('Argentina/Cataratas');
-const ecoparquePhotos        = getImages('Argentina/Ecoparque');
-const gaimanPhotos           = getImages('Argentina/Gaiman');
-const laCumbrecitaPhotos     = getImages('Argentina/LaCumbrecita');
+const ushuaia2Photos         = getImages('Argentina/Ushuaia2');
+const trelewPhotos           = getImages('Argentina/Trelew-Tombo-Martires');
 const martinGarciaPhotos     = getImages('Argentina/MartinGarcia');
+const banksyPhotos           = getImages('Argentina/Banksy');
+const mendozaPhotos          = getImages('Argentina/Mendoza');
+const gaimanPhotos           = getImages('Argentina/Gaiman');
+const ecoparquePhotos        = getImages('Argentina/Ecoparque');
+const cataratosPhotos        = getImages('Argentina/Cataratas');
+const barilochePhotos        = getImages('Argentina/Bariloche');
+const lautrecPhotos          = getImages('Argentina/Lautrec');
+const ushuaia1Photos         = getImages('Argentina/Ushuaia1');
+const tandilPhotos           = getImages('Argentina/Tandil');
+const valadonPhotos          = getImages('Argentina/Valadon');
 const patagoniaAustralPhotos = getImages('Argentina/PatagoniaAustral');
 const peninsulaValdesPhotos  = getImages('Argentina/PeninsulaValdes');
 const puertoMadrynPhotos     = getImages('Argentina/PuertoMadryn');
-const tandilPhotos           = getImages('Argentina/Tandil');
-const trelewPhotos           = getImages('Argentina/Trelew-Tombo-Martires');
-const ushuaia1Photos         = getImages('Argentina/Ushuaia1');
-const ushuaia2Photos         = getImages('Argentina/Ushuaia2');
+const calafatePhotos         = getImages('Argentina/Calafate');
+const laCumbrecitaPhotos     = getImages('Argentina/LaCumbrecita');
 
 const captions: Record<string, Record<string, CaptionEntry>> = {
-  Bariloche:        getFolderCaptions('Argentina/Bariloche'),
-  Mendoza:          getFolderCaptions('Argentina/Mendoza'),
+  VanGogh:          getFolderCaptions('Argentina/VanGogh'),
+  Halloween:        getFolderCaptionsRecursive('Argentina/Halloween'),
+  Messi:            getFolderCaptions('Argentina/Messi'),
+  SteveMcCurry:     getFolderCaptions('Argentina/SteveMcCurry'),
   IslasMalvinas:    getFolderCaptions('Argentina/IslasMalvinas'),
-  Calafate:         getFolderCaptions('Argentina/Calafate'),
-  Cataratas:        getFolderCaptions('Argentina/Cataratas'),
-  Ecoparque:        getFolderCaptions('Argentina/Ecoparque'),
-  Gaiman:           getFolderCaptions('Argentina/Gaiman'),
-  LaCumbrecita:     getFolderCaptions('Argentina/LaCumbrecita'),
+  Ushuaia2:         getFolderCaptions('Argentina/Ushuaia2'),
+  Trelew:           getFolderCaptions('Argentina/Trelew-Tombo-Martires'),
   MartinGarcia:     getFolderCaptions('Argentina/MartinGarcia'),
+  Banksy:           getFolderCaptions('Argentina/Banksy'),
+  Mendoza:          getFolderCaptions('Argentina/Mendoza'),
+  Gaiman:           getFolderCaptions('Argentina/Gaiman'),
+  Ecoparque:        getFolderCaptions('Argentina/Ecoparque'),
+  Cataratas:        getFolderCaptions('Argentina/Cataratas'),
+  Bariloche:        getFolderCaptions('Argentina/Bariloche'),
+  Lautrec:          getFolderCaptions('Argentina/Lautrec'),
+  Ushuaia1:         getFolderCaptions('Argentina/Ushuaia1'),
+  Tandil:           getFolderCaptions('Argentina/Tandil'),
+  Valadon:          getFolderCaptions('Argentina/Valadon'),
   PatagoniaAustral: getFolderCaptions('Argentina/PatagoniaAustral'),
   PeninsulaValdes:  getFolderCaptions('Argentina/PeninsulaValdes'),
   PuertoMadryn:     getFolderCaptions('Argentina/PuertoMadryn'),
-  Tandil:           getFolderCaptions('Argentina/Tandil'),
-  Trelew:           getFolderCaptions('Argentina/Trelew-Tombo-Martires'),
-  Ushuaia1:         getFolderCaptions('Argentina/Ushuaia1'),
-  Ushuaia2:         getFolderCaptions('Argentina/Ushuaia2'),
+  Calafate:         getFolderCaptions('Argentina/Calafate'),
+  LaCumbrecita:     getFolderCaptions('Argentina/LaCumbrecita'),
 };
 
 const currentCountry = 'argentina';
@@ -83,14 +138,14 @@ const jsonLd = {
   title="Argentina — Fotografía de viajes"
   description="Galería fotográfica de Argentina: Bariloche, Mendoza, Patagonia Austral, Ushuaia, Islas Malvinas, Cataratas del Iguazú y más. Fotografías de Orlando Moure."
   canonical={siteBase}
-  ogImage={`${siteBase}/Argentina/Bariloche/00.webp`}
+  ogImage={`${siteBase}/Argentina/VanGogh/00.webp`}
   pageHeading="Argentina — Fotografía de viajes"
   jsonLd={jsonLd}
 >
   <header class="site-header" id="js-site-header">
     <div class="site-header__brand">
-      <span class="site-header__title" id="js-section-title">BARILOCHE</span>
-      <span class="site-header__sub" id="js-section-sub">en familia</span>
+      <span class="site-header__title" id="js-section-title">VAN GOGH</span>
+      <span class="site-header__sub" id="js-section-sub"></span>
     </div>
     <button class="site-header__menu-btn" id="js-menu-btn" aria-label="Menú" aria-expanded="false">
       <span></span>
@@ -116,6 +171,406 @@ const jsonLd = {
   <div class="country-nav__backdrop" id="js-country-nav-backdrop"></div>
 
   <div id="fullpage" class="photo-gallery">
+
+    <!-- Van Gogh -->
+    <div class="section photo-gallery__section" data-anchor="van-gogh">
+      <div class="swiper photo-gallery__carousel" id="swiper-van-gogh">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide photo-gallery__slide photo-gallery__slide--intro">
+            <div class="photo-gallery__intro">
+              <h2 class="photo-gallery__intro-heading">VAN GOGH</h2>
+            </div>
+          </div>
+          {vanGoghPhotos.map((img, i) => (
+            <div class="swiper-slide photo-gallery__slide">
+              <div class="photo-gallery__slide-media">
+                <img class="photo-gallery__image" src={`${import.meta.env.BASE_URL}Argentina/VanGogh/${img}`} alt={`Van Gogh — ${img.replace(/\.\w+$/, '').replace(/-/g, ' ')}`} loading={i === 0 ? 'eager' : 'lazy'} decoding={i === 0 ? 'sync' : 'async'} />
+              </div>
+              <div class="photo-gallery__caption">
+                {captions.VanGogh?.[img]?.title && <span class="photo-gallery__caption-title">{captions.VanGogh[img].title}</span>}
+                {captions.VanGogh?.[img]?.description && <span class="photo-gallery__caption-desc">{captions.VanGogh[img].description}</span>}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div class="photo-gallery__counter" aria-live="polite"><span class="photo-gallery__counter-current">1</span><span class="photo-gallery__counter-sep">/</span><span class="photo-gallery__counter-total">{vanGoghPhotos.length + 1}</span></div>
+      </div>
+      <button id="prev-van-gogh" class="swiper-button-prev photo-gallery__nav photo-gallery__nav--prev" aria-label="Foto anterior"></button>
+      <button id="next-van-gogh" class="swiper-button-next photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
+    </div>
+
+    <!-- Halloween -->
+    <div class="section photo-gallery__section" data-anchor="halloween">
+      <div class="swiper photo-gallery__carousel" id="swiper-halloween">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide photo-gallery__slide photo-gallery__slide--intro">
+            <div class="photo-gallery__intro">
+              <h2 class="photo-gallery__intro-heading">HALLOWEEN</h2>
+            </div>
+          </div>
+          {halloweenPhotos.map((img, i) => (
+            <div class="swiper-slide photo-gallery__slide">
+              <div class="photo-gallery__slide-media">
+                <img class="photo-gallery__image" src={`${import.meta.env.BASE_URL}Argentina/Halloween/${img}`} alt={`Halloween — ${img.replace(/\.\w+$/, '').replace(/[-/]/g, ' ')}`} loading={i === 0 ? 'eager' : 'lazy'} decoding={i === 0 ? 'sync' : 'async'} />
+              </div>
+              <div class="photo-gallery__caption">
+                {captions.Halloween?.[img]?.title && <span class="photo-gallery__caption-title">{captions.Halloween[img].title}</span>}
+                {captions.Halloween?.[img]?.description && <span class="photo-gallery__caption-desc">{captions.Halloween[img].description}</span>}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div class="photo-gallery__counter" aria-live="polite"><span class="photo-gallery__counter-current">1</span><span class="photo-gallery__counter-sep">/</span><span class="photo-gallery__counter-total">{halloweenPhotos.length + 1}</span></div>
+      </div>
+      <button id="prev-halloween" class="swiper-button-prev photo-gallery__nav photo-gallery__nav--prev" aria-label="Foto anterior"></button>
+      <button id="next-halloween" class="swiper-button-next photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
+    </div>
+
+    <!-- Messi -->
+    <div class="section photo-gallery__section" data-anchor="messi">
+      <div class="swiper photo-gallery__carousel" id="swiper-messi">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide photo-gallery__slide photo-gallery__slide--intro">
+            <div class="photo-gallery__intro">
+              <h2 class="photo-gallery__intro-heading">MESSI</h2>
+            </div>
+          </div>
+          {messiPhotos.map((img, i) => (
+            <div class="swiper-slide photo-gallery__slide">
+              <div class="photo-gallery__slide-media">
+                <img class="photo-gallery__image" src={`${import.meta.env.BASE_URL}Argentina/Messi/${img}`} alt={`Messi — ${img.replace(/\.\w+$/, '').replace(/-/g, ' ')}`} loading={i === 0 ? 'eager' : 'lazy'} decoding={i === 0 ? 'sync' : 'async'} />
+              </div>
+              <div class="photo-gallery__caption">
+                {captions.Messi?.[img]?.title && <span class="photo-gallery__caption-title">{captions.Messi[img].title}</span>}
+                {captions.Messi?.[img]?.description && <span class="photo-gallery__caption-desc">{captions.Messi[img].description}</span>}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div class="photo-gallery__counter" aria-live="polite"><span class="photo-gallery__counter-current">1</span><span class="photo-gallery__counter-sep">/</span><span class="photo-gallery__counter-total">{messiPhotos.length + 1}</span></div>
+      </div>
+      <button id="prev-messi" class="swiper-button-prev photo-gallery__nav photo-gallery__nav--prev" aria-label="Foto anterior"></button>
+      <button id="next-messi" class="swiper-button-next photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
+    </div>
+
+    <!-- Steve McCurry -->
+    <div class="section photo-gallery__section" data-anchor="steve-mccurry">
+      <div class="swiper photo-gallery__carousel" id="swiper-steve-mccurry">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide photo-gallery__slide photo-gallery__slide--intro">
+            <div class="photo-gallery__intro">
+              <h2 class="photo-gallery__intro-heading">STEVE MCCURRY</h2>
+            </div>
+          </div>
+          {steveMcCurryPhotos.map((img, i) => (
+            <div class="swiper-slide photo-gallery__slide">
+              <div class="photo-gallery__slide-media">
+                <img class="photo-gallery__image" src={`${import.meta.env.BASE_URL}Argentina/SteveMcCurry/${img}`} alt={`Steve McCurry — ${img.replace(/\.\w+$/, '').replace(/-/g, ' ')}`} loading={i === 0 ? 'eager' : 'lazy'} decoding={i === 0 ? 'sync' : 'async'} />
+              </div>
+              <div class="photo-gallery__caption">
+                {captions.SteveMcCurry?.[img]?.title && <span class="photo-gallery__caption-title">{captions.SteveMcCurry[img].title}</span>}
+                {captions.SteveMcCurry?.[img]?.description && <span class="photo-gallery__caption-desc">{captions.SteveMcCurry[img].description}</span>}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div class="photo-gallery__counter" aria-live="polite"><span class="photo-gallery__counter-current">1</span><span class="photo-gallery__counter-sep">/</span><span class="photo-gallery__counter-total">{steveMcCurryPhotos.length + 1}</span></div>
+      </div>
+      <button id="prev-steve-mccurry" class="swiper-button-prev photo-gallery__nav photo-gallery__nav--prev" aria-label="Foto anterior"></button>
+      <button id="next-steve-mccurry" class="swiper-button-next photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
+    </div>
+
+    <!-- Islas Malvinas -->
+    <div class="section photo-gallery__section" data-anchor="islas-malvinas">
+      <div class="swiper photo-gallery__carousel" id="swiper-islas-malvinas">
+        <div class="swiper-wrapper">
+
+          <!-- Slide intro Islas Malvinas -->
+          <div class="swiper-slide photo-gallery__slide photo-gallery__slide--intro">
+            <div class="photo-gallery__intro">
+              <h2 class="photo-gallery__intro-heading">ISLAS MALVINAS</h2>
+              <p class="photo-gallery__intro-tagline">Cinco Cruceros</p>
+              <p class="photo-gallery__intro-body">
+                A más de 1.200 kilómetros de la costa patagónica, las Islas Malvinas guardan
+                una naturaleza única y una historia que marcó a la Argentina. A lo largo de
+                cinco cruceros distintos, el mismo archipiélago siempre deparó nuevas sorpresas:
+                pingüinos, lobos marinos, paisajes ventosos y una identidad propia que no se
+                parece a nada.
+              </p>
+            </div>
+          </div>
+
+          {islasMalvinasPhotos.map((img, i) => (
+            <div class="swiper-slide photo-gallery__slide">
+              <div class="photo-gallery__slide-media">
+                <img
+                  class="photo-gallery__image"
+                  src={`${import.meta.env.BASE_URL}Argentina/IslasMalvinas/${img}`}
+                  alt={`Islas Malvinas — ${img.replace(/\.\w+$/, '').replace(/-/g, ' ')}`}
+                  loading={i === 0 ? 'eager' : 'lazy'}
+                  decoding={i === 0 ? 'sync' : 'async'}
+                />
+              </div>
+              <div class="photo-gallery__caption">
+                {captions.IslasMalvinas?.[img]?.title && <span class="photo-gallery__caption-title">{captions.IslasMalvinas[img].title}</span>}
+                {captions.IslasMalvinas?.[img]?.description && <span class="photo-gallery__caption-desc">{captions.IslasMalvinas[img].description}</span>}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div class="photo-gallery__counter" aria-live="polite">
+          <span class="photo-gallery__counter-current">1</span>
+          <span class="photo-gallery__counter-sep">/</span>
+          <span class="photo-gallery__counter-total">{islasMalvinasPhotos.length + 1}</span>
+        </div>
+      </div>
+      <button id="prev-islas-malvinas" class="swiper-button-prev photo-gallery__nav photo-gallery__nav--prev" aria-label="Foto anterior"></button>
+      <button id="next-islas-malvinas" class="swiper-button-next photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
+    </div>
+
+    <!-- Ushuaia II -->
+    <div class="section photo-gallery__section" data-anchor="ushuaia-2">
+      <div class="swiper photo-gallery__carousel" id="swiper-ushuaia-2">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide photo-gallery__slide photo-gallery__slide--intro">
+            <div class="photo-gallery__intro">
+              <h2 class="photo-gallery__intro-heading">USHUAIA</h2>
+              <p class="photo-gallery__intro-tagline">segunda visita</p>
+            </div>
+          </div>
+          {ushuaia2Photos.map((img, i) => (
+            <div class="swiper-slide photo-gallery__slide">
+              <div class="photo-gallery__slide-media">
+                <img class="photo-gallery__image" src={`${import.meta.env.BASE_URL}Argentina/Ushuaia2/${img}`} alt={`Ushuaia — ${img.replace(/\.\w+$/, '').replace(/-/g, ' ')}`} loading={i === 0 ? 'eager' : 'lazy'} decoding={i === 0 ? 'sync' : 'async'} />
+              </div>
+              <div class="photo-gallery__caption">
+                {captions.Ushuaia2?.[img]?.title && <span class="photo-gallery__caption-title">{captions.Ushuaia2[img].title}</span>}
+                {captions.Ushuaia2?.[img]?.description && <span class="photo-gallery__caption-desc">{captions.Ushuaia2[img].description}</span>}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div class="photo-gallery__counter" aria-live="polite"><span class="photo-gallery__counter-current">1</span><span class="photo-gallery__counter-sep">/</span><span class="photo-gallery__counter-total">{ushuaia2Photos.length + 1}</span></div>
+      </div>
+      <button id="prev-ushuaia-2" class="swiper-button-prev photo-gallery__nav photo-gallery__nav--prev" aria-label="Foto anterior"></button>
+      <button id="next-ushuaia-2" class="swiper-button-next photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
+    </div>
+
+    <!-- Trelew / Tombo / Mártires -->
+    <div class="section photo-gallery__section" data-anchor="trelew">
+      <div class="swiper photo-gallery__carousel" id="swiper-trelew">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide photo-gallery__slide photo-gallery__slide--intro">
+            <div class="photo-gallery__intro">
+              <h2 class="photo-gallery__intro-heading">TRELEW</h2>
+              <p class="photo-gallery__intro-tagline">Tombo y Mártires</p>
+            </div>
+          </div>
+          {trelewPhotos.map((img, i) => (
+            <div class="swiper-slide photo-gallery__slide">
+              <div class="photo-gallery__slide-media">
+                <img class="photo-gallery__image" src={`${import.meta.env.BASE_URL}Argentina/Trelew-Tombo-Martires/${img}`} alt={`Trelew — ${img.replace(/\.\w+$/, '').replace(/-/g, ' ')}`} loading={i === 0 ? 'eager' : 'lazy'} decoding={i === 0 ? 'sync' : 'async'} />
+              </div>
+              <div class="photo-gallery__caption">
+                {captions.Trelew?.[img]?.title && <span class="photo-gallery__caption-title">{captions.Trelew[img].title}</span>}
+                {captions.Trelew?.[img]?.description && <span class="photo-gallery__caption-desc">{captions.Trelew[img].description}</span>}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div class="photo-gallery__counter" aria-live="polite"><span class="photo-gallery__counter-current">1</span><span class="photo-gallery__counter-sep">/</span><span class="photo-gallery__counter-total">{trelewPhotos.length + 1}</span></div>
+      </div>
+      <button id="prev-trelew" class="swiper-button-prev photo-gallery__nav photo-gallery__nav--prev" aria-label="Foto anterior"></button>
+      <button id="next-trelew" class="swiper-button-next photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
+    </div>
+
+    <!-- Martín García -->
+    <div class="section photo-gallery__section" data-anchor="martin-garcia">
+      <div class="swiper photo-gallery__carousel" id="swiper-martin-garcia">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide photo-gallery__slide photo-gallery__slide--intro">
+            <div class="photo-gallery__intro">
+              <h2 class="photo-gallery__intro-heading">MARTÍN GARCÍA</h2>
+              <p class="photo-gallery__intro-tagline">Isla</p>
+            </div>
+          </div>
+          {martinGarciaPhotos.map((img, i) => (
+            <div class="swiper-slide photo-gallery__slide">
+              <div class="photo-gallery__slide-media">
+                <img class="photo-gallery__image" src={`${import.meta.env.BASE_URL}Argentina/MartinGarcia/${img}`} alt={`Martín García — ${img.replace(/\.\w+$/, '').replace(/-/g, ' ')}`} loading={i === 0 ? 'eager' : 'lazy'} decoding={i === 0 ? 'sync' : 'async'} />
+              </div>
+              <div class="photo-gallery__caption">
+                {captions.MartinGarcia?.[img]?.title && <span class="photo-gallery__caption-title">{captions.MartinGarcia[img].title}</span>}
+                {captions.MartinGarcia?.[img]?.description && <span class="photo-gallery__caption-desc">{captions.MartinGarcia[img].description}</span>}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div class="photo-gallery__counter" aria-live="polite"><span class="photo-gallery__counter-current">1</span><span class="photo-gallery__counter-sep">/</span><span class="photo-gallery__counter-total">{martinGarciaPhotos.length + 1}</span></div>
+      </div>
+      <button id="prev-martin-garcia" class="swiper-button-prev photo-gallery__nav photo-gallery__nav--prev" aria-label="Foto anterior"></button>
+      <button id="next-martin-garcia" class="swiper-button-next photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
+    </div>
+
+    <!-- Banksy -->
+    <div class="section photo-gallery__section" data-anchor="banksy">
+      <div class="swiper photo-gallery__carousel" id="swiper-banksy">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide photo-gallery__slide photo-gallery__slide--intro">
+            <div class="photo-gallery__intro">
+              <h2 class="photo-gallery__intro-heading">BANKSY</h2>
+            </div>
+          </div>
+          {banksyPhotos.map((img, i) => (
+            <div class="swiper-slide photo-gallery__slide">
+              <div class="photo-gallery__slide-media">
+                <img class="photo-gallery__image" src={`${import.meta.env.BASE_URL}Argentina/Banksy/${img}`} alt={`Banksy — ${img.replace(/\.\w+$/, '').replace(/-/g, ' ')}`} loading={i === 0 ? 'eager' : 'lazy'} decoding={i === 0 ? 'sync' : 'async'} />
+              </div>
+              <div class="photo-gallery__caption">
+                {captions.Banksy?.[img]?.title && <span class="photo-gallery__caption-title">{captions.Banksy[img].title}</span>}
+                {captions.Banksy?.[img]?.description && <span class="photo-gallery__caption-desc">{captions.Banksy[img].description}</span>}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div class="photo-gallery__counter" aria-live="polite"><span class="photo-gallery__counter-current">1</span><span class="photo-gallery__counter-sep">/</span><span class="photo-gallery__counter-total">{banksyPhotos.length + 1}</span></div>
+      </div>
+      <button id="prev-banksy" class="swiper-button-prev photo-gallery__nav photo-gallery__nav--prev" aria-label="Foto anterior"></button>
+      <button id="next-banksy" class="swiper-button-next photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
+    </div>
+
+    <!-- Mendoza -->
+    <div class="section photo-gallery__section" data-anchor="mendoza">
+      <div class="swiper photo-gallery__carousel" id="swiper-mendoza">
+        <div class="swiper-wrapper">
+
+          <!-- Slide intro Mendoza -->
+          <div class="swiper-slide photo-gallery__slide photo-gallery__slide--intro">
+            <div class="photo-gallery__intro">
+              <h2 class="photo-gallery__intro-heading">MENDOZA</h2>
+              <p class="photo-gallery__intro-tagline">Ayer y Hoy</p>
+              <p class="photo-gallery__intro-body">
+                Fundada en 1561 y destacada por su belleza paisajística y su valioso
+                patrimonio histórico, Mendoza se encuentra entre las provincias más
+                desarrolladas de Argentina. Ubicada al pie de la Cordillera de los
+                Andes, es la puerta obligada hacia el Océano Pacífico. Y gracias a la
+                protección de las elevadas montañas andinas, su clima es templado
+                con escasas lluvias y muy pocos días de viento. ¡Ven a conocerla!
+              </p>
+            </div>
+          </div>
+
+          {mendozaPhotos.map((img, i) => (
+            <div class="swiper-slide photo-gallery__slide">
+              <div class="photo-gallery__slide-media">
+                <img
+                  class="photo-gallery__image"
+                  src={`${import.meta.env.BASE_URL}Argentina/Mendoza/${img}`}
+                  alt={`Mendoza — ${img.replace(/\.\w+$/, '').replace(/-/g, ' ')}`}
+                  loading={i === 0 ? 'eager' : 'lazy'}
+                  decoding={i === 0 ? 'sync' : 'async'}
+                />
+              </div>
+              <div class="photo-gallery__caption">
+                {captions.Mendoza?.[img]?.title && <span class="photo-gallery__caption-title">{captions.Mendoza[img].title}</span>}
+                {captions.Mendoza?.[img]?.description && <span class="photo-gallery__caption-desc">{captions.Mendoza[img].description}</span>}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div class="photo-gallery__counter" aria-live="polite">
+          <span class="photo-gallery__counter-current">1</span>
+          <span class="photo-gallery__counter-sep">/</span>
+          <span class="photo-gallery__counter-total">{mendozaPhotos.length + 1}</span>
+        </div>
+      </div>
+      <button id="prev-mendoza" class="swiper-button-prev photo-gallery__nav photo-gallery__nav--prev" aria-label="Foto anterior"></button>
+      <button id="next-mendoza" class="swiper-button-next photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
+    </div>
+
+    <!-- Gaiman -->
+    <div class="section photo-gallery__section" data-anchor="gaiman">
+      <div class="swiper photo-gallery__carousel" id="swiper-gaiman">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide photo-gallery__slide photo-gallery__slide--intro">
+            <div class="photo-gallery__intro">
+              <h2 class="photo-gallery__intro-heading">GAIMAN</h2>
+              <p class="photo-gallery__intro-tagline">Patagonia galesa</p>
+            </div>
+          </div>
+          {gaimanPhotos.map((img, i) => (
+            <div class="swiper-slide photo-gallery__slide">
+              <div class="photo-gallery__slide-media">
+                <img class="photo-gallery__image" src={`${import.meta.env.BASE_URL}Argentina/Gaiman/${img}`} alt={`Gaiman — ${img.replace(/\.\w+$/, '').replace(/-/g, ' ')}`} loading={i === 0 ? 'eager' : 'lazy'} decoding={i === 0 ? 'sync' : 'async'} />
+              </div>
+              <div class="photo-gallery__caption">
+                {captions.Gaiman?.[img]?.title && <span class="photo-gallery__caption-title">{captions.Gaiman[img].title}</span>}
+                {captions.Gaiman?.[img]?.description && <span class="photo-gallery__caption-desc">{captions.Gaiman[img].description}</span>}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div class="photo-gallery__counter" aria-live="polite"><span class="photo-gallery__counter-current">1</span><span class="photo-gallery__counter-sep">/</span><span class="photo-gallery__counter-total">{gaimanPhotos.length + 1}</span></div>
+      </div>
+      <button id="prev-gaiman" class="swiper-button-prev photo-gallery__nav photo-gallery__nav--prev" aria-label="Foto anterior"></button>
+      <button id="next-gaiman" class="swiper-button-next photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
+    </div>
+
+    <!-- Ecoparque -->
+    <div class="section photo-gallery__section" data-anchor="ecoparque">
+      <div class="swiper photo-gallery__carousel" id="swiper-ecoparque">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide photo-gallery__slide photo-gallery__slide--intro">
+            <div class="photo-gallery__intro">
+              <h2 class="photo-gallery__intro-heading">ECOPARQUE</h2>
+              <p class="photo-gallery__intro-tagline">Buenos Aires</p>
+            </div>
+          </div>
+          {ecoparquePhotos.map((img, i) => (
+            <div class="swiper-slide photo-gallery__slide">
+              <div class="photo-gallery__slide-media">
+                <img class="photo-gallery__image" src={`${import.meta.env.BASE_URL}Argentina/Ecoparque/${img}`} alt={`Ecoparque — ${img.replace(/\.\w+$/, '').replace(/-/g, ' ')}`} loading={i === 0 ? 'eager' : 'lazy'} decoding={i === 0 ? 'sync' : 'async'} />
+              </div>
+              <div class="photo-gallery__caption">
+                {captions.Ecoparque?.[img]?.title && <span class="photo-gallery__caption-title">{captions.Ecoparque[img].title}</span>}
+                {captions.Ecoparque?.[img]?.description && <span class="photo-gallery__caption-desc">{captions.Ecoparque[img].description}</span>}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div class="photo-gallery__counter" aria-live="polite"><span class="photo-gallery__counter-current">1</span><span class="photo-gallery__counter-sep">/</span><span class="photo-gallery__counter-total">{ecoparquePhotos.length + 1}</span></div>
+      </div>
+      <button id="prev-ecoparque" class="swiper-button-prev photo-gallery__nav photo-gallery__nav--prev" aria-label="Foto anterior"></button>
+      <button id="next-ecoparque" class="swiper-button-next photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
+    </div>
+
+    <!-- Cataratas -->
+    <div class="section photo-gallery__section" data-anchor="cataratas">
+      <div class="swiper photo-gallery__carousel" id="swiper-cataratas">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide photo-gallery__slide photo-gallery__slide--intro">
+            <div class="photo-gallery__intro">
+              <h2 class="photo-gallery__intro-heading">CATARATAS</h2>
+              <p class="photo-gallery__intro-tagline">Iguazú</p>
+            </div>
+          </div>
+          {cataratosPhotos.map((img, i) => (
+            <div class="swiper-slide photo-gallery__slide">
+              <div class="photo-gallery__slide-media">
+                <img class="photo-gallery__image" src={`${import.meta.env.BASE_URL}Argentina/Cataratas/${img}`} alt={`Cataratas — ${img.replace(/\.\w+$/, '').replace(/-/g, ' ')}`} loading={i === 0 ? 'eager' : 'lazy'} decoding={i === 0 ? 'sync' : 'async'} />
+              </div>
+              <div class="photo-gallery__caption">
+                {captions.Cataratas?.[img]?.title && <span class="photo-gallery__caption-title">{captions.Cataratas[img].title}</span>}
+                {captions.Cataratas?.[img]?.description && <span class="photo-gallery__caption-desc">{captions.Cataratas[img].description}</span>}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div class="photo-gallery__counter" aria-live="polite"><span class="photo-gallery__counter-current">1</span><span class="photo-gallery__counter-sep">/</span><span class="photo-gallery__counter-total">{cataratosPhotos.length + 1}</span></div>
+      </div>
+      <button id="prev-cataratas" class="swiper-button-prev photo-gallery__nav photo-gallery__nav--prev" aria-label="Foto anterior"></button>
+      <button id="next-cataratas" class="swiper-button-next photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
+    </div>
 
     <!-- Bariloche -->
     <div class="section photo-gallery__section" data-anchor="bariloche">
@@ -168,269 +623,114 @@ const jsonLd = {
       <button id="next-bariloche" class="swiper-button-next photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
     </div>
 
-    <!-- Mendoza -->
-    <div class="section photo-gallery__section" data-anchor="mendoza">
-      <div class="swiper photo-gallery__carousel" id="swiper-mendoza">
+    <!-- Lautrec -->
+    <div class="section photo-gallery__section" data-anchor="lautrec">
+      <div class="swiper photo-gallery__carousel" id="swiper-lautrec">
         <div class="swiper-wrapper">
-
-          <!-- Slide intro Mendoza -->
           <div class="swiper-slide photo-gallery__slide photo-gallery__slide--intro">
             <div class="photo-gallery__intro">
-              <h2 class="photo-gallery__intro-heading">MENDOZA</h2>
-              <p class="photo-gallery__intro-tagline">Ayer y Hoy</p>
-              <p class="photo-gallery__intro-body">
-                Fundada en 1561 y destacada por su belleza paisajística y su valioso
-                patrimonio histórico, Mendoza se encuentra entre las provincias más
-                desarrolladas de Argentina. Ubicada al pie de la Cordillera de los
-                Andes, es la puerta obligada hacia el Océano Pacífico. Y gracias a la
-                protección de las elevadas montañas andinas, su clima es templado
-                con escasas lluvias y muy pocos días de viento. ¡Ven a conocerla!
-              </p>
+              <h2 class="photo-gallery__intro-heading">LAUTREC</h2>
             </div>
           </div>
-
-          {mendozaPhotos.map((img, i) => (
+          {lautrecPhotos.map((img, i) => (
             <div class="swiper-slide photo-gallery__slide">
               <div class="photo-gallery__slide-media">
-                <img
-                  class="photo-gallery__image"
-                  src={`${import.meta.env.BASE_URL}Argentina/Mendoza/${img}`}
-                  alt={`Mendoza — ${img.replace(/\.\w+$/, '').replace(/-/g, ' ')}`}
-                  loading={i === 0 ? 'eager' : 'lazy'}
-                  decoding={i === 0 ? 'sync' : 'async'}
-                />
+                <img class="photo-gallery__image" src={`${import.meta.env.BASE_URL}Argentina/Lautrec/${img}`} alt={`Lautrec — ${img.replace(/\.\w+$/, '').replace(/-/g, ' ')}`} loading={i === 0 ? 'eager' : 'lazy'} decoding={i === 0 ? 'sync' : 'async'} />
               </div>
               <div class="photo-gallery__caption">
-                {captions.Mendoza?.[img]?.title && <span class="photo-gallery__caption-title">{captions.Mendoza[img].title}</span>}
-                {captions.Mendoza?.[img]?.description && <span class="photo-gallery__caption-desc">{captions.Mendoza[img].description}</span>}
+                {captions.Lautrec?.[img]?.title && <span class="photo-gallery__caption-title">{captions.Lautrec[img].title}</span>}
+                {captions.Lautrec?.[img]?.description && <span class="photo-gallery__caption-desc">{captions.Lautrec[img].description}</span>}
               </div>
             </div>
           ))}
         </div>
-        <div class="photo-gallery__counter" aria-live="polite">
-          <span class="photo-gallery__counter-current">1</span>
-          <span class="photo-gallery__counter-sep">/</span>
-          <span class="photo-gallery__counter-total">{mendozaPhotos.length + 1}</span>
-        </div>
+        <div class="photo-gallery__counter" aria-live="polite"><span class="photo-gallery__counter-current">1</span><span class="photo-gallery__counter-sep">/</span><span class="photo-gallery__counter-total">{lautrecPhotos.length + 1}</span></div>
       </div>
-      <button id="prev-mendoza" class="swiper-button-prev photo-gallery__nav photo-gallery__nav--prev" aria-label="Foto anterior"></button>
-      <button id="next-mendoza" class="swiper-button-next photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
+      <button id="prev-lautrec" class="swiper-button-prev photo-gallery__nav photo-gallery__nav--prev" aria-label="Foto anterior"></button>
+      <button id="next-lautrec" class="swiper-button-next photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
     </div>
 
-    <!-- Islas Malvinas -->
-    <div class="section photo-gallery__section" data-anchor="islas-malvinas">
-      <div class="swiper photo-gallery__carousel" id="swiper-islas-malvinas">
+    <!-- Ushuaia I -->
+    <div class="section photo-gallery__section" data-anchor="ushuaia-1">
+      <div class="swiper photo-gallery__carousel" id="swiper-ushuaia-1">
         <div class="swiper-wrapper">
-
-          <!-- Slide intro Islas Malvinas -->
           <div class="swiper-slide photo-gallery__slide photo-gallery__slide--intro">
             <div class="photo-gallery__intro">
-              <h2 class="photo-gallery__intro-heading">ISLAS MALVINAS</h2>
-              <p class="photo-gallery__intro-tagline">Cinco Cruceros</p>
-              <p class="photo-gallery__intro-body">
-                A más de 1.200 kilómetros de la costa patagónica, las Islas Malvinas guardan
-                una naturaleza única y una historia que marcó a la Argentina. A lo largo de
-                cinco cruceros distintos, el mismo archipiélago siempre deparó nuevas sorpresas:
-                pingüinos, lobos marinos, paisajes ventosos y una identidad propia que no se
-                parece a nada.
-              </p>
+              <h2 class="photo-gallery__intro-heading">USHUAIA</h2>
+              <p class="photo-gallery__intro-tagline">primera visita</p>
             </div>
           </div>
-
-          {islasMalvinasPhotos.map((img, i) => (
+          {ushuaia1Photos.map((img, i) => (
             <div class="swiper-slide photo-gallery__slide">
               <div class="photo-gallery__slide-media">
-                <img
-                  class="photo-gallery__image"
-                  src={`${import.meta.env.BASE_URL}Argentina/IslasMalvinas/${img}`}
-                  alt={`Islas Malvinas — ${img.replace(/\.\w+$/, '').replace(/-/g, ' ')}`}
-                  loading={i === 0 ? 'eager' : 'lazy'}
-                  decoding={i === 0 ? 'sync' : 'async'}
-                />
+                <img class="photo-gallery__image" src={`${import.meta.env.BASE_URL}Argentina/Ushuaia1/${img}`} alt={`Ushuaia — ${img.replace(/\.\w+$/, '').replace(/-/g, ' ')}`} loading={i === 0 ? 'eager' : 'lazy'} decoding={i === 0 ? 'sync' : 'async'} />
               </div>
               <div class="photo-gallery__caption">
-                {captions.IslasMalvinas?.[img]?.title && <span class="photo-gallery__caption-title">{captions.IslasMalvinas[img].title}</span>}
-                {captions.IslasMalvinas?.[img]?.description && <span class="photo-gallery__caption-desc">{captions.IslasMalvinas[img].description}</span>}
+                {captions.Ushuaia1?.[img]?.title && <span class="photo-gallery__caption-title">{captions.Ushuaia1[img].title}</span>}
+                {captions.Ushuaia1?.[img]?.description && <span class="photo-gallery__caption-desc">{captions.Ushuaia1[img].description}</span>}
               </div>
             </div>
           ))}
         </div>
-        <div class="photo-gallery__counter" aria-live="polite">
-          <span class="photo-gallery__counter-current">1</span>
-          <span class="photo-gallery__counter-sep">/</span>
-          <span class="photo-gallery__counter-total">{islasMalvinasPhotos.length + 1}</span>
-        </div>
+        <div class="photo-gallery__counter" aria-live="polite"><span class="photo-gallery__counter-current">1</span><span class="photo-gallery__counter-sep">/</span><span class="photo-gallery__counter-total">{ushuaia1Photos.length + 1}</span></div>
       </div>
-      <button id="prev-islas-malvinas" class="swiper-button-prev photo-gallery__nav photo-gallery__nav--prev" aria-label="Foto anterior"></button>
-      <button id="next-islas-malvinas" class="swiper-button-next photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
+      <button id="prev-ushuaia-1" class="swiper-button-prev photo-gallery__nav photo-gallery__nav--prev" aria-label="Foto anterior"></button>
+      <button id="next-ushuaia-1" class="swiper-button-next photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
     </div>
 
-    <!-- Calafate -->
-    <div class="section photo-gallery__section" data-anchor="calafate">
-      <div class="swiper photo-gallery__carousel" id="swiper-calafate">
+    <!-- Tandil -->
+    <div class="section photo-gallery__section" data-anchor="tandil">
+      <div class="swiper photo-gallery__carousel" id="swiper-tandil">
         <div class="swiper-wrapper">
           <div class="swiper-slide photo-gallery__slide photo-gallery__slide--intro">
             <div class="photo-gallery__intro">
-              <h2 class="photo-gallery__intro-heading">CALAFATE</h2>
-              <p class="photo-gallery__intro-tagline">Maravillas Patagónicas</p>
-            </div>
-          </div>
-          {calafatePhotos.map((img, i) => (
-            <div class="swiper-slide photo-gallery__slide">
-              <div class="photo-gallery__slide-media">
-                <img class="photo-gallery__image" src={`${import.meta.env.BASE_URL}Argentina/Calafate/${img}`} alt={`Calafate — ${img.replace(/\.\w+$/, '').replace(/-/g, ' ')}`} loading={i === 0 ? 'eager' : 'lazy'} decoding={i === 0 ? 'sync' : 'async'} />
-              </div>
-              <div class="photo-gallery__caption">
-                {captions.Calafate?.[img]?.title && <span class="photo-gallery__caption-title">{captions.Calafate[img].title}</span>}
-                {captions.Calafate?.[img]?.description && <span class="photo-gallery__caption-desc">{captions.Calafate[img].description}</span>}
-              </div>
-            </div>
-          ))}
-        </div>
-        <div class="photo-gallery__counter" aria-live="polite"><span class="photo-gallery__counter-current">1</span><span class="photo-gallery__counter-sep">/</span><span class="photo-gallery__counter-total">{calafatePhotos.length + 1}</span></div>
-      </div>
-      <button id="prev-calafate" class="swiper-button-prev photo-gallery__nav photo-gallery__nav--prev" aria-label="Foto anterior"></button>
-      <button id="next-calafate" class="swiper-button-next photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
-    </div>
-
-    <!-- Cataratas -->
-    <div class="section photo-gallery__section" data-anchor="cataratas">
-      <div class="swiper photo-gallery__carousel" id="swiper-cataratas">
-        <div class="swiper-wrapper">
-          <div class="swiper-slide photo-gallery__slide photo-gallery__slide--intro">
-            <div class="photo-gallery__intro">
-              <h2 class="photo-gallery__intro-heading">CATARATAS</h2>
-              <p class="photo-gallery__intro-tagline">Iguazú</p>
-            </div>
-          </div>
-          {cataratosPhotos.map((img, i) => (
-            <div class="swiper-slide photo-gallery__slide">
-              <div class="photo-gallery__slide-media">
-                <img class="photo-gallery__image" src={`${import.meta.env.BASE_URL}Argentina/Cataratas/${img}`} alt={`Cataratas — ${img.replace(/\.\w+$/, '').replace(/-/g, ' ')}`} loading={i === 0 ? 'eager' : 'lazy'} decoding={i === 0 ? 'sync' : 'async'} />
-              </div>
-              <div class="photo-gallery__caption">
-                {captions.Cataratas?.[img]?.title && <span class="photo-gallery__caption-title">{captions.Cataratas[img].title}</span>}
-                {captions.Cataratas?.[img]?.description && <span class="photo-gallery__caption-desc">{captions.Cataratas[img].description}</span>}
-              </div>
-            </div>
-          ))}
-        </div>
-        <div class="photo-gallery__counter" aria-live="polite"><span class="photo-gallery__counter-current">1</span><span class="photo-gallery__counter-sep">/</span><span class="photo-gallery__counter-total">{cataratosPhotos.length + 1}</span></div>
-      </div>
-      <button id="prev-cataratas" class="swiper-button-prev photo-gallery__nav photo-gallery__nav--prev" aria-label="Foto anterior"></button>
-      <button id="next-cataratas" class="swiper-button-next photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
-    </div>
-
-    <!-- Ecoparque -->
-    <div class="section photo-gallery__section" data-anchor="ecoparque">
-      <div class="swiper photo-gallery__carousel" id="swiper-ecoparque">
-        <div class="swiper-wrapper">
-          <div class="swiper-slide photo-gallery__slide photo-gallery__slide--intro">
-            <div class="photo-gallery__intro">
-              <h2 class="photo-gallery__intro-heading">ECOPARQUE</h2>
+              <h2 class="photo-gallery__intro-heading">TANDIL</h2>
               <p class="photo-gallery__intro-tagline">Buenos Aires</p>
             </div>
           </div>
-          {ecoparquePhotos.map((img, i) => (
+          {tandilPhotos.map((img, i) => (
             <div class="swiper-slide photo-gallery__slide">
               <div class="photo-gallery__slide-media">
-                <img class="photo-gallery__image" src={`${import.meta.env.BASE_URL}Argentina/Ecoparque/${img}`} alt={`Ecoparque — ${img.replace(/\.\w+$/, '').replace(/-/g, ' ')}`} loading={i === 0 ? 'eager' : 'lazy'} decoding={i === 0 ? 'sync' : 'async'} />
+                <img class="photo-gallery__image" src={`${import.meta.env.BASE_URL}Argentina/Tandil/${img}`} alt={`Tandil — ${img.replace(/\.\w+$/, '').replace(/-/g, ' ')}`} loading={i === 0 ? 'eager' : 'lazy'} decoding={i === 0 ? 'sync' : 'async'} />
               </div>
               <div class="photo-gallery__caption">
-                {captions.Ecoparque?.[img]?.title && <span class="photo-gallery__caption-title">{captions.Ecoparque[img].title}</span>}
-                {captions.Ecoparque?.[img]?.description && <span class="photo-gallery__caption-desc">{captions.Ecoparque[img].description}</span>}
+                {captions.Tandil?.[img]?.title && <span class="photo-gallery__caption-title">{captions.Tandil[img].title}</span>}
+                {captions.Tandil?.[img]?.description && <span class="photo-gallery__caption-desc">{captions.Tandil[img].description}</span>}
               </div>
             </div>
           ))}
         </div>
-        <div class="photo-gallery__counter" aria-live="polite"><span class="photo-gallery__counter-current">1</span><span class="photo-gallery__counter-sep">/</span><span class="photo-gallery__counter-total">{ecoparquePhotos.length + 1}</span></div>
+        <div class="photo-gallery__counter" aria-live="polite"><span class="photo-gallery__counter-current">1</span><span class="photo-gallery__counter-sep">/</span><span class="photo-gallery__counter-total">{tandilPhotos.length + 1}</span></div>
       </div>
-      <button id="prev-ecoparque" class="swiper-button-prev photo-gallery__nav photo-gallery__nav--prev" aria-label="Foto anterior"></button>
-      <button id="next-ecoparque" class="swiper-button-next photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
+      <button id="prev-tandil" class="swiper-button-prev photo-gallery__nav photo-gallery__nav--prev" aria-label="Foto anterior"></button>
+      <button id="next-tandil" class="swiper-button-next photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
     </div>
 
-    <!-- Gaiman -->
-    <div class="section photo-gallery__section" data-anchor="gaiman">
-      <div class="swiper photo-gallery__carousel" id="swiper-gaiman">
+    <!-- Valadon -->
+    <div class="section photo-gallery__section" data-anchor="valadon">
+      <div class="swiper photo-gallery__carousel" id="swiper-valadon">
         <div class="swiper-wrapper">
           <div class="swiper-slide photo-gallery__slide photo-gallery__slide--intro">
             <div class="photo-gallery__intro">
-              <h2 class="photo-gallery__intro-heading">GAIMAN</h2>
-              <p class="photo-gallery__intro-tagline">Patagonia galesa</p>
+              <h2 class="photo-gallery__intro-heading">VALADON</h2>
             </div>
           </div>
-          {gaimanPhotos.map((img, i) => (
+          {valadonPhotos.map((img, i) => (
             <div class="swiper-slide photo-gallery__slide">
               <div class="photo-gallery__slide-media">
-                <img class="photo-gallery__image" src={`${import.meta.env.BASE_URL}Argentina/Gaiman/${img}`} alt={`Gaiman — ${img.replace(/\.\w+$/, '').replace(/-/g, ' ')}`} loading={i === 0 ? 'eager' : 'lazy'} decoding={i === 0 ? 'sync' : 'async'} />
+                <img class="photo-gallery__image" src={`${import.meta.env.BASE_URL}Argentina/Valadon/${img}`} alt={`Valadon — ${img.replace(/\.\w+$/, '').replace(/-/g, ' ')}`} loading={i === 0 ? 'eager' : 'lazy'} decoding={i === 0 ? 'sync' : 'async'} />
               </div>
               <div class="photo-gallery__caption">
-                {captions.Gaiman?.[img]?.title && <span class="photo-gallery__caption-title">{captions.Gaiman[img].title}</span>}
-                {captions.Gaiman?.[img]?.description && <span class="photo-gallery__caption-desc">{captions.Gaiman[img].description}</span>}
+                {captions.Valadon?.[img]?.title && <span class="photo-gallery__caption-title">{captions.Valadon[img].title}</span>}
+                {captions.Valadon?.[img]?.description && <span class="photo-gallery__caption-desc">{captions.Valadon[img].description}</span>}
               </div>
             </div>
           ))}
         </div>
-        <div class="photo-gallery__counter" aria-live="polite"><span class="photo-gallery__counter-current">1</span><span class="photo-gallery__counter-sep">/</span><span class="photo-gallery__counter-total">{gaimanPhotos.length + 1}</span></div>
+        <div class="photo-gallery__counter" aria-live="polite"><span class="photo-gallery__counter-current">1</span><span class="photo-gallery__counter-sep">/</span><span class="photo-gallery__counter-total">{valadonPhotos.length + 1}</span></div>
       </div>
-      <button id="prev-gaiman" class="swiper-button-prev photo-gallery__nav photo-gallery__nav--prev" aria-label="Foto anterior"></button>
-      <button id="next-gaiman" class="swiper-button-next photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
-    </div>
-
-    <!-- La Cumbrecita -->
-    <div class="section photo-gallery__section" data-anchor="la-cumbrecita">
-      <div class="swiper photo-gallery__carousel" id="swiper-la-cumbrecita">
-        <div class="swiper-wrapper">
-          <div class="swiper-slide photo-gallery__slide photo-gallery__slide--intro">
-            <div class="photo-gallery__intro">
-              <h2 class="photo-gallery__intro-heading">LA CUMBRECITA</h2>
-              <p class="photo-gallery__intro-tagline">Córdoba</p>
-            </div>
-          </div>
-          {laCumbrecitaPhotos.map((img, i) => (
-            <div class="swiper-slide photo-gallery__slide">
-              <div class="photo-gallery__slide-media">
-                <img class="photo-gallery__image" src={`${import.meta.env.BASE_URL}Argentina/LaCumbrecita/${img}`} alt={`La Cumbrecita — ${img.replace(/\.\w+$/, '').replace(/-/g, ' ')}`} loading={i === 0 ? 'eager' : 'lazy'} decoding={i === 0 ? 'sync' : 'async'} />
-              </div>
-              <div class="photo-gallery__caption">
-                {captions.LaCumbrecita?.[img]?.title && <span class="photo-gallery__caption-title">{captions.LaCumbrecita[img].title}</span>}
-                {captions.LaCumbrecita?.[img]?.description && <span class="photo-gallery__caption-desc">{captions.LaCumbrecita[img].description}</span>}
-              </div>
-            </div>
-          ))}
-        </div>
-        <div class="photo-gallery__counter" aria-live="polite"><span class="photo-gallery__counter-current">1</span><span class="photo-gallery__counter-sep">/</span><span class="photo-gallery__counter-total">{laCumbrecitaPhotos.length + 1}</span></div>
-      </div>
-      <button id="prev-la-cumbrecita" class="swiper-button-prev photo-gallery__nav photo-gallery__nav--prev" aria-label="Foto anterior"></button>
-      <button id="next-la-cumbrecita" class="swiper-button-next photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
-    </div>
-
-    <!-- Martín García -->
-    <div class="section photo-gallery__section" data-anchor="martin-garcia">
-      <div class="swiper photo-gallery__carousel" id="swiper-martin-garcia">
-        <div class="swiper-wrapper">
-          <div class="swiper-slide photo-gallery__slide photo-gallery__slide--intro">
-            <div class="photo-gallery__intro">
-              <h2 class="photo-gallery__intro-heading">MARTÍN GARCÍA</h2>
-              <p class="photo-gallery__intro-tagline">Isla</p>
-            </div>
-          </div>
-          {martinGarciaPhotos.map((img, i) => (
-            <div class="swiper-slide photo-gallery__slide">
-              <div class="photo-gallery__slide-media">
-                <img class="photo-gallery__image" src={`${import.meta.env.BASE_URL}Argentina/MartinGarcia/${img}`} alt={`Martín García — ${img.replace(/\.\w+$/, '').replace(/-/g, ' ')}`} loading={i === 0 ? 'eager' : 'lazy'} decoding={i === 0 ? 'sync' : 'async'} />
-              </div>
-              <div class="photo-gallery__caption">
-                {captions.MartinGarcia?.[img]?.title && <span class="photo-gallery__caption-title">{captions.MartinGarcia[img].title}</span>}
-                {captions.MartinGarcia?.[img]?.description && <span class="photo-gallery__caption-desc">{captions.MartinGarcia[img].description}</span>}
-              </div>
-            </div>
-          ))}
-        </div>
-        <div class="photo-gallery__counter" aria-live="polite"><span class="photo-gallery__counter-current">1</span><span class="photo-gallery__counter-sep">/</span><span class="photo-gallery__counter-total">{martinGarciaPhotos.length + 1}</span></div>
-      </div>
-      <button id="prev-martin-garcia" class="swiper-button-prev photo-gallery__nav photo-gallery__nav--prev" aria-label="Foto anterior"></button>
-      <button id="next-martin-garcia" class="swiper-button-next photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
+      <button id="prev-valadon" class="swiper-button-prev photo-gallery__nav photo-gallery__nav--prev" aria-label="Foto anterior"></button>
+      <button id="next-valadon" class="swiper-button-next photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
     </div>
 
     <!-- Patagonia Austral -->
@@ -514,138 +814,89 @@ const jsonLd = {
       <button id="next-puerto-madryn" class="swiper-button-next photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
     </div>
 
-    <!-- Tandil -->
-    <div class="section photo-gallery__section" data-anchor="tandil">
-      <div class="swiper photo-gallery__carousel" id="swiper-tandil">
+    <!-- Calafate -->
+    <div class="section photo-gallery__section" data-anchor="calafate">
+      <div class="swiper photo-gallery__carousel" id="swiper-calafate">
         <div class="swiper-wrapper">
           <div class="swiper-slide photo-gallery__slide photo-gallery__slide--intro">
             <div class="photo-gallery__intro">
-              <h2 class="photo-gallery__intro-heading">TANDIL</h2>
-              <p class="photo-gallery__intro-tagline">Buenos Aires</p>
+              <h2 class="photo-gallery__intro-heading">CALAFATE</h2>
+              <p class="photo-gallery__intro-tagline">Maravillas Patagónicas</p>
             </div>
           </div>
-          {tandilPhotos.map((img, i) => (
+          {calafatePhotos.map((img, i) => (
             <div class="swiper-slide photo-gallery__slide">
               <div class="photo-gallery__slide-media">
-                <img class="photo-gallery__image" src={`${import.meta.env.BASE_URL}Argentina/Tandil/${img}`} alt={`Tandil — ${img.replace(/\.\w+$/, '').replace(/-/g, ' ')}`} loading={i === 0 ? 'eager' : 'lazy'} decoding={i === 0 ? 'sync' : 'async'} />
+                <img class="photo-gallery__image" src={`${import.meta.env.BASE_URL}Argentina/Calafate/${img}`} alt={`Calafate — ${img.replace(/\.\w+$/, '').replace(/-/g, ' ')}`} loading={i === 0 ? 'eager' : 'lazy'} decoding={i === 0 ? 'sync' : 'async'} />
               </div>
               <div class="photo-gallery__caption">
-                {captions.Tandil?.[img]?.title && <span class="photo-gallery__caption-title">{captions.Tandil[img].title}</span>}
-                {captions.Tandil?.[img]?.description && <span class="photo-gallery__caption-desc">{captions.Tandil[img].description}</span>}
+                {captions.Calafate?.[img]?.title && <span class="photo-gallery__caption-title">{captions.Calafate[img].title}</span>}
+                {captions.Calafate?.[img]?.description && <span class="photo-gallery__caption-desc">{captions.Calafate[img].description}</span>}
               </div>
             </div>
           ))}
         </div>
-        <div class="photo-gallery__counter" aria-live="polite"><span class="photo-gallery__counter-current">1</span><span class="photo-gallery__counter-sep">/</span><span class="photo-gallery__counter-total">{tandilPhotos.length + 1}</span></div>
+        <div class="photo-gallery__counter" aria-live="polite"><span class="photo-gallery__counter-current">1</span><span class="photo-gallery__counter-sep">/</span><span class="photo-gallery__counter-total">{calafatePhotos.length + 1}</span></div>
       </div>
-      <button id="prev-tandil" class="swiper-button-prev photo-gallery__nav photo-gallery__nav--prev" aria-label="Foto anterior"></button>
-      <button id="next-tandil" class="swiper-button-next photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
+      <button id="prev-calafate" class="swiper-button-prev photo-gallery__nav photo-gallery__nav--prev" aria-label="Foto anterior"></button>
+      <button id="next-calafate" class="swiper-button-next photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
     </div>
 
-    <!-- Trelew / Tombo / Mártires -->
-    <div class="section photo-gallery__section" data-anchor="trelew">
-      <div class="swiper photo-gallery__carousel" id="swiper-trelew">
+    <!-- La Cumbrecita -->
+    <div class="section photo-gallery__section" data-anchor="la-cumbrecita">
+      <div class="swiper photo-gallery__carousel" id="swiper-la-cumbrecita">
         <div class="swiper-wrapper">
           <div class="swiper-slide photo-gallery__slide photo-gallery__slide--intro">
             <div class="photo-gallery__intro">
-              <h2 class="photo-gallery__intro-heading">TRELEW</h2>
-              <p class="photo-gallery__intro-tagline">Tombo y Mártires</p>
+              <h2 class="photo-gallery__intro-heading">LA CUMBRECITA</h2>
+              <p class="photo-gallery__intro-tagline">Córdoba</p>
             </div>
           </div>
-          {trelewPhotos.map((img, i) => (
+          {laCumbrecitaPhotos.map((img, i) => (
             <div class="swiper-slide photo-gallery__slide">
               <div class="photo-gallery__slide-media">
-                <img class="photo-gallery__image" src={`${import.meta.env.BASE_URL}Argentina/Trelew-Tombo-Martires/${img}`} alt={`Trelew — ${img.replace(/\.\w+$/, '').replace(/-/g, ' ')}`} loading={i === 0 ? 'eager' : 'lazy'} decoding={i === 0 ? 'sync' : 'async'} />
+                <img class="photo-gallery__image" src={`${import.meta.env.BASE_URL}Argentina/LaCumbrecita/${img}`} alt={`La Cumbrecita — ${img.replace(/\.\w+$/, '').replace(/-/g, ' ')}`} loading={i === 0 ? 'eager' : 'lazy'} decoding={i === 0 ? 'sync' : 'async'} />
               </div>
               <div class="photo-gallery__caption">
-                {captions.Trelew?.[img]?.title && <span class="photo-gallery__caption-title">{captions.Trelew[img].title}</span>}
-                {captions.Trelew?.[img]?.description && <span class="photo-gallery__caption-desc">{captions.Trelew[img].description}</span>}
+                {captions.LaCumbrecita?.[img]?.title && <span class="photo-gallery__caption-title">{captions.LaCumbrecita[img].title}</span>}
+                {captions.LaCumbrecita?.[img]?.description && <span class="photo-gallery__caption-desc">{captions.LaCumbrecita[img].description}</span>}
               </div>
             </div>
           ))}
         </div>
-        <div class="photo-gallery__counter" aria-live="polite"><span class="photo-gallery__counter-current">1</span><span class="photo-gallery__counter-sep">/</span><span class="photo-gallery__counter-total">{trelewPhotos.length + 1}</span></div>
+        <div class="photo-gallery__counter" aria-live="polite"><span class="photo-gallery__counter-current">1</span><span class="photo-gallery__counter-sep">/</span><span class="photo-gallery__counter-total">{laCumbrecitaPhotos.length + 1}</span></div>
       </div>
-      <button id="prev-trelew" class="swiper-button-prev photo-gallery__nav photo-gallery__nav--prev" aria-label="Foto anterior"></button>
-      <button id="next-trelew" class="swiper-button-next photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
-    </div>
-
-    <!-- Ushuaia I -->
-    <div class="section photo-gallery__section" data-anchor="ushuaia-1">
-      <div class="swiper photo-gallery__carousel" id="swiper-ushuaia-1">
-        <div class="swiper-wrapper">
-          <div class="swiper-slide photo-gallery__slide photo-gallery__slide--intro">
-            <div class="photo-gallery__intro">
-              <h2 class="photo-gallery__intro-heading">USHUAIA</h2>
-              <p class="photo-gallery__intro-tagline">primera visita</p>
-            </div>
-          </div>
-          {ushuaia1Photos.map((img, i) => (
-            <div class="swiper-slide photo-gallery__slide">
-              <div class="photo-gallery__slide-media">
-                <img class="photo-gallery__image" src={`${import.meta.env.BASE_URL}Argentina/Ushuaia1/${img}`} alt={`Ushuaia — ${img.replace(/\.\w+$/, '').replace(/-/g, ' ')}`} loading={i === 0 ? 'eager' : 'lazy'} decoding={i === 0 ? 'sync' : 'async'} />
-              </div>
-              <div class="photo-gallery__caption">
-                {captions.Ushuaia1?.[img]?.title && <span class="photo-gallery__caption-title">{captions.Ushuaia1[img].title}</span>}
-                {captions.Ushuaia1?.[img]?.description && <span class="photo-gallery__caption-desc">{captions.Ushuaia1[img].description}</span>}
-              </div>
-            </div>
-          ))}
-        </div>
-        <div class="photo-gallery__counter" aria-live="polite"><span class="photo-gallery__counter-current">1</span><span class="photo-gallery__counter-sep">/</span><span class="photo-gallery__counter-total">{ushuaia1Photos.length + 1}</span></div>
-      </div>
-      <button id="prev-ushuaia-1" class="swiper-button-prev photo-gallery__nav photo-gallery__nav--prev" aria-label="Foto anterior"></button>
-      <button id="next-ushuaia-1" class="swiper-button-next photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
-    </div>
-
-    <!-- Ushuaia II -->
-    <div class="section photo-gallery__section" data-anchor="ushuaia-2">
-      <div class="swiper photo-gallery__carousel" id="swiper-ushuaia-2">
-        <div class="swiper-wrapper">
-          <div class="swiper-slide photo-gallery__slide photo-gallery__slide--intro">
-            <div class="photo-gallery__intro">
-              <h2 class="photo-gallery__intro-heading">USHUAIA</h2>
-              <p class="photo-gallery__intro-tagline">segunda visita</p>
-            </div>
-          </div>
-          {ushuaia2Photos.map((img, i) => (
-            <div class="swiper-slide photo-gallery__slide">
-              <div class="photo-gallery__slide-media">
-                <img class="photo-gallery__image" src={`${import.meta.env.BASE_URL}Argentina/Ushuaia2/${img}`} alt={`Ushuaia — ${img.replace(/\.\w+$/, '').replace(/-/g, ' ')}`} loading={i === 0 ? 'eager' : 'lazy'} decoding={i === 0 ? 'sync' : 'async'} />
-              </div>
-              <div class="photo-gallery__caption">
-                {captions.Ushuaia2?.[img]?.title && <span class="photo-gallery__caption-title">{captions.Ushuaia2[img].title}</span>}
-                {captions.Ushuaia2?.[img]?.description && <span class="photo-gallery__caption-desc">{captions.Ushuaia2[img].description}</span>}
-              </div>
-            </div>
-          ))}
-        </div>
-        <div class="photo-gallery__counter" aria-live="polite"><span class="photo-gallery__counter-current">1</span><span class="photo-gallery__counter-sep">/</span><span class="photo-gallery__counter-total">{ushuaia2Photos.length + 1}</span></div>
-      </div>
-      <button id="prev-ushuaia-2" class="swiper-button-prev photo-gallery__nav photo-gallery__nav--prev" aria-label="Foto anterior"></button>
-      <button id="next-ushuaia-2" class="swiper-button-next photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
+      <button id="prev-la-cumbrecita" class="swiper-button-prev photo-gallery__nav photo-gallery__nav--prev" aria-label="Foto anterior"></button>
+      <button id="next-la-cumbrecita" class="swiper-button-next photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
     </div>
 
 
   </div>
 
   <nav class="section-nav" aria-label="Secciones">
-    <button class="section-nav__item section-nav__item--active" data-anchor="bariloche"       data-label="Bariloche"       aria-label="Ir a Bariloche"></button>
-    <button class="section-nav__item" data-anchor="mendoza"          data-label="Mendoza"          aria-label="Ir a Mendoza"></button>
-    <button class="section-nav__item" data-anchor="islas-malvinas"   data-label="Islas Malvinas"   aria-label="Ir a Islas Malvinas"></button>
-    <button class="section-nav__item" data-anchor="calafate"          data-label="Calafate"          aria-label="Ir a Calafate"></button>
-    <button class="section-nav__item" data-anchor="cataratas"         data-label="Cataratas"         aria-label="Ir a Cataratas"></button>
-    <button class="section-nav__item" data-anchor="ecoparque"         data-label="Ecoparque"         aria-label="Ir a Ecoparque"></button>
-    <button class="section-nav__item" data-anchor="gaiman"            data-label="Gaiman"            aria-label="Ir a Gaiman"></button>
-    <button class="section-nav__item" data-anchor="la-cumbrecita"     data-label="La Cumbrecita"     aria-label="Ir a La Cumbrecita"></button>
+    <button class="section-nav__item section-nav__item--active" data-anchor="van-gogh"          data-label="Van Gogh"          aria-label="Ir a Van Gogh"></button>
+    <button class="section-nav__item" data-anchor="halloween"         data-label="Halloween"         aria-label="Ir a Halloween"></button>
+    <button class="section-nav__item" data-anchor="messi"             data-label="Messi"             aria-label="Ir a Messi"></button>
+    <button class="section-nav__item" data-anchor="steve-mccurry"     data-label="Steve McCurry"     aria-label="Ir a Steve McCurry"></button>
+    <button class="section-nav__item" data-anchor="islas-malvinas"    data-label="Islas Malvinas"    aria-label="Ir a Islas Malvinas"></button>
+    <button class="section-nav__item" data-anchor="ushuaia-2"         data-label="Ushuaia II"        aria-label="Ir a Ushuaia II"></button>
+    <button class="section-nav__item" data-anchor="trelew"            data-label="Trelew"            aria-label="Ir a Trelew"></button>
     <button class="section-nav__item" data-anchor="martin-garcia"     data-label="Martín García"     aria-label="Ir a Martín García"></button>
+    <button class="section-nav__item" data-anchor="banksy"            data-label="Banksy"            aria-label="Ir a Banksy"></button>
+    <button class="section-nav__item" data-anchor="mendoza"           data-label="Mendoza"           aria-label="Ir a Mendoza"></button>
+    <button class="section-nav__item" data-anchor="gaiman"            data-label="Gaiman"            aria-label="Ir a Gaiman"></button>
+    <button class="section-nav__item" data-anchor="ecoparque"         data-label="Ecoparque"         aria-label="Ir a Ecoparque"></button>
+    <button class="section-nav__item" data-anchor="cataratas"         data-label="Cataratas"         aria-label="Ir a Cataratas"></button>
+    <button class="section-nav__item" data-anchor="bariloche"         data-label="Bariloche"         aria-label="Ir a Bariloche"></button>
+    <button class="section-nav__item" data-anchor="lautrec"           data-label="Lautrec"           aria-label="Ir a Lautrec"></button>
+    <button class="section-nav__item" data-anchor="ushuaia-1"         data-label="Ushuaia I"         aria-label="Ir a Ushuaia I"></button>
+    <button class="section-nav__item" data-anchor="tandil"            data-label="Tandil"            aria-label="Ir a Tandil"></button>
+    <button class="section-nav__item" data-anchor="valadon"           data-label="Valadon"           aria-label="Ir a Valadon"></button>
     <button class="section-nav__item" data-anchor="patagonia-austral" data-label="Patagonia Austral" aria-label="Ir a Patagonia Austral"></button>
     <button class="section-nav__item" data-anchor="peninsula-valdes"  data-label="Península Valdés"  aria-label="Ir a Península Valdés"></button>
     <button class="section-nav__item" data-anchor="puerto-madryn"     data-label="Puerto Madryn"     aria-label="Ir a Puerto Madryn"></button>
-    <button class="section-nav__item" data-anchor="tandil"            data-label="Tandil"            aria-label="Ir a Tandil"></button>
-    <button class="section-nav__item" data-anchor="trelew"            data-label="Trelew"            aria-label="Ir a Trelew"></button>
-    <button class="section-nav__item" data-anchor="ushuaia-1"         data-label="Ushuaia I"         aria-label="Ir a Ushuaia I"></button>
-    <button class="section-nav__item" data-anchor="ushuaia-2"         data-label="Ushuaia II"        aria-label="Ir a Ushuaia II"></button>
+    <button class="section-nav__item" data-anchor="calafate"          data-label="Calafate"          aria-label="Ir a Calafate"></button>
+    <button class="section-nav__item" data-anchor="la-cumbrecita"     data-label="La Cumbrecita"     aria-label="Ir a La Cumbrecita"></button>
   </nav>
 </Layout>
 
@@ -1156,22 +1407,29 @@ const jsonLd = {
 
   // ── Agregar nuevas secciones acá ──────────────────────────────
   const SECTIONS = [
-    { anchor: 'bariloche',       label: 'Bariloche',        title: 'BARILOCHE',        sub: 'en familia'          },
-    { anchor: 'mendoza',         label: 'Mendoza',          title: 'MENDOZA',          sub: 'Ayer y Hoy'          },
-    { anchor: 'islas-malvinas',  label: 'Islas Malvinas',   title: 'ISLAS MALVINAS',   sub: 'Cinco Cruceros'      },
+    { anchor: 'van-gogh',          label: 'Van Gogh',          title: 'VAN GOGH',          sub: ''                       },
+    { anchor: 'halloween',         label: 'Halloween',         title: 'HALLOWEEN',         sub: ''                       },
+    { anchor: 'messi',             label: 'Messi',             title: 'MESSI',             sub: ''                       },
+    { anchor: 'steve-mccurry',     label: 'Steve McCurry',     title: 'STEVE MCCURRY',     sub: ''                       },
+    { anchor: 'islas-malvinas',    label: 'Islas Malvinas',    title: 'ISLAS MALVINAS',    sub: 'Cinco Cruceros'         },
+    { anchor: 'ushuaia-2',         label: 'Ushuaia II',        title: 'USHUAIA',           sub: 'segunda visita'         },
+    { anchor: 'trelew',            label: 'Trelew',            title: 'TRELEW',            sub: 'Tombo y Mártires'       },
+    { anchor: 'martin-garcia',     label: 'Martín García',     title: 'MARTÍN GARCÍA',     sub: 'Isla'                   },
+    { anchor: 'banksy',            label: 'Banksy',            title: 'BANKSY',            sub: ''                       },
+    { anchor: 'mendoza',           label: 'Mendoza',           title: 'MENDOZA',           sub: 'Ayer y Hoy'             },
+    { anchor: 'gaiman',            label: 'Gaiman',            title: 'GAIMAN',            sub: 'Patagonia galesa'       },
+    { anchor: 'ecoparque',         label: 'Ecoparque',         title: 'ECOPARQUE',         sub: 'Buenos Aires'           },
+    { anchor: 'cataratas',         label: 'Cataratas',         title: 'CATARATAS',         sub: 'Iguazú'                 },
+    { anchor: 'bariloche',         label: 'Bariloche',         title: 'BARILOCHE',         sub: 'en familia'             },
+    { anchor: 'lautrec',           label: 'Lautrec',           title: 'LAUTREC',           sub: ''                       },
+    { anchor: 'ushuaia-1',         label: 'Ushuaia I',         title: 'USHUAIA',           sub: 'primera visita'         },
+    { anchor: 'tandil',            label: 'Tandil',            title: 'TANDIL',            sub: 'Buenos Aires'           },
+    { anchor: 'valadon',           label: 'Valadon',           title: 'VALADON',           sub: ''                       },
+    { anchor: 'patagonia-austral', label: 'Patagonia Austral', title: 'PATAGONIA AUSTRAL', sub: ''                       },
+    { anchor: 'peninsula-valdes',  label: 'Península Valdés',  title: 'PENÍNSULA VALDÉS',  sub: ''                       },
+    { anchor: 'puerto-madryn',     label: 'Puerto Madryn',     title: 'PUERTO MADRYN',     sub: ''                       },
     { anchor: 'calafate',          label: 'Calafate',          title: 'CALAFATE',          sub: 'Maravillas Patagónicas' },
-    { anchor: 'cataratas',         label: 'Cataratas',         title: 'CATARATAS',         sub: 'Iguazú'              },
-    { anchor: 'ecoparque',         label: 'Ecoparque',         title: 'ECOPARQUE',         sub: 'Buenos Aires'        },
-    { anchor: 'gaiman',            label: 'Gaiman',            title: 'GAIMAN',            sub: 'Patagonia galesa'    },
-    { anchor: 'la-cumbrecita',     label: 'La Cumbrecita',     title: 'LA CUMBRECITA',     sub: 'Córdoba'             },
-    { anchor: 'martin-garcia',     label: 'Martín García',     title: 'MARTÍN GARCÍA',     sub: 'Isla'                },
-    { anchor: 'patagonia-austral', label: 'Patagonia Austral', title: 'PATAGONIA AUSTRAL', sub: ''                    },
-    { anchor: 'peninsula-valdes',  label: 'Península Valdés',  title: 'PENÍNSULA VALDÉS',  sub: ''                    },
-    { anchor: 'puerto-madryn',     label: 'Puerto Madryn',     title: 'PUERTO MADRYN',     sub: ''                    },
-    { anchor: 'tandil',            label: 'Tandil',            title: 'TANDIL',            sub: 'Buenos Aires'        },
-    { anchor: 'trelew',            label: 'Trelew',            title: 'TRELEW',            sub: 'Tombo y Mártires'    },
-    { anchor: 'ushuaia-1',         label: 'Ushuaia I',         title: 'USHUAIA',           sub: 'primera visita'      },
-    { anchor: 'ushuaia-2',         label: 'Ushuaia II',        title: 'USHUAIA',           sub: 'segunda visita'      },
+    { anchor: 'la-cumbrecita',     label: 'La Cumbrecita',     title: 'LA CUMBRECITA',     sub: 'Córdoba'                },
   ];
   // ─────────────────────────────────────────────────────────────
 
