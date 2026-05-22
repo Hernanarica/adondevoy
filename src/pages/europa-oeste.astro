@@ -45,7 +45,6 @@ const brujasPhotos         = getImages('Europa/brujas');
 const lucernaPhotos        = getImages('Europa/Lucerna');
 const swissDiamondPhotos   = getImages('Europa/alojamiento/SwissDiamond-Politours');
 const swissPearlPhotos     = getImages('Europa/alojamiento/SwissPearl-Politours');
-const europaNoche1Photos   = getImages('Europa/Europa-de-Noche1');
 const europaNoche2Photos   = getImages('Europa/Europa-de-Noche2');
 
 const captions: Record<string, Record<string, CaptionEntry>> = {
@@ -64,7 +63,6 @@ const captions: Record<string, Record<string, CaptionEntry>> = {
   Lucerna:      getFolderCaptions('Europa/Lucerna'),
   SwissDiamond: getFolderCaptions('Europa/alojamiento/SwissDiamond-Politours'),
   SwissPearl:   getFolderCaptions('Europa/alojamiento/SwissPearl-Politours'),
-  EuropaNoche1: getFolderCaptions('Europa/Europa-de-Noche1'),
   EuropaNoche2: getFolderCaptions('Europa/Europa-de-Noche2'),
 };
 
@@ -539,42 +537,14 @@ const jsonLd = {
       <button id="next-swiss-pearl" class="swiper-button-next photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
     </div>
 
-    <!-- Europa de Noche I -->
-    <div class="section photo-gallery__section" data-anchor="europa-noche-1">
-      <div class="swiper photo-gallery__carousel" id="swiper-europa-noche-1">
-        <div class="swiper-wrapper">
-          <div class="swiper-slide photo-gallery__slide photo-gallery__slide--intro">
-            <div class="photo-gallery__intro">
-              <h2 class="photo-gallery__intro-heading">EUROPA DE NOCHE</h2>
-              <p class="photo-gallery__intro-tagline">I</p>
-            </div>
-          </div>
-          {europaNoche1Photos.map((img, i) => (
-            <div class="swiper-slide photo-gallery__slide">
-              <div class="photo-gallery__slide-media">
-                <img class="photo-gallery__image" src={`${import.meta.env.BASE_URL}Europa/Europa-de-Noche1/${img}`} alt={`Europa de Noche I — ${img.replace(/\.\w+$/, '').replace(/-/g, ' ')}`} loading={i === 0 ? 'eager' : 'lazy'} decoding={i === 0 ? 'sync' : 'async'} />
-              </div>
-              <div class="photo-gallery__caption">
-                {captions.EuropaNoche1?.[img]?.title && <span class="photo-gallery__caption-title">{captions.EuropaNoche1[img].title}</span>}
-                {captions.EuropaNoche1?.[img]?.description && <span class="photo-gallery__caption-desc">{captions.EuropaNoche1[img].description}</span>}
-              </div>
-            </div>
-          ))}
-        </div>
-        <div class="photo-gallery__counter" aria-live="polite"><span class="photo-gallery__counter-current">1</span><span class="photo-gallery__counter-sep">/</span><span class="photo-gallery__counter-total">{europaNoche1Photos.length + 1}</span></div>
-      </div>
-      <button id="prev-europa-noche-1" class="swiper-button-prev photo-gallery__nav photo-gallery__nav--prev" aria-label="Foto anterior"></button>
-      <button id="next-europa-noche-1" class="swiper-button-next photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
-    </div>
-
-    <!-- Europa de Noche II -->
+    <!-- Europa de Noche -->
     <div class="section photo-gallery__section" data-anchor="europa-noche-2">
       <div class="swiper photo-gallery__carousel" id="swiper-europa-noche-2">
         <div class="swiper-wrapper">
           <div class="swiper-slide photo-gallery__slide photo-gallery__slide--intro">
             <div class="photo-gallery__intro">
               <h2 class="photo-gallery__intro-heading">EUROPA DE NOCHE</h2>
-              <p class="photo-gallery__intro-tagline">II</p>
+              <p class="photo-gallery__intro-tagline"></p>
             </div>
           </div>
           {europaNoche2Photos.map((img, i) => (
@@ -613,8 +583,7 @@ const jsonLd = {
     <button class="section-nav__item" data-anchor="lucerna"       data-label="Lucerna"       aria-label="Ir a Lucerna"></button>
     <button class="section-nav__item" data-anchor="swiss-diamond" data-label="Swiss Diamond" aria-label="Ir a Swiss Diamond"></button>
     <button class="section-nav__item" data-anchor="swiss-pearl"   data-label="Swiss Pearl"   aria-label="Ir a Swiss Pearl"></button>
-    <button class="section-nav__item" data-anchor="europa-noche-1" data-label="Noche I"      aria-label="Ir a Europa de Noche I"></button>
-    <button class="section-nav__item" data-anchor="europa-noche-2" data-label="Noche II"     aria-label="Ir a Europa de Noche II"></button>
+    <button class="section-nav__item" data-anchor="europa-noche-2" data-label="Noche"        aria-label="Ir a Europa de Noche"></button>
   </nav>
 </Layout>
 
@@ -784,8 +753,7 @@ const jsonLd = {
     { anchor: 'lucerna',        label: 'Lucerna',          title: 'LUCERNA',         sub: 'Suiza'    },
     { anchor: 'swiss-diamond',  label: 'Swiss Diamond',    title: 'SWISS DIAMOND',   sub: 'Hotel'    },
     { anchor: 'swiss-pearl',    label: 'Swiss Pearl',      title: 'SWISS PEARL',     sub: 'Hotel'    },
-    { anchor: 'europa-noche-1', label: 'Europa de Noche I',  title: 'EUROPA DE NOCHE', sub: 'I'      },
-    { anchor: 'europa-noche-2', label: 'Europa de Noche II', title: 'EUROPA DE NOCHE', sub: 'II'     },
+    { anchor: 'europa-noche-2', label: 'Europa de Noche',    title: 'EUROPA DE NOCHE', sub: ''        },
   ];
 
   function updateSectionUI(anchor: string): void {

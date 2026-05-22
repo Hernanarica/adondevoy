@@ -328,34 +328,6 @@ const jsonLd = {
       <button id="next-islas-malvinas" class="swiper-button-next photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
     </div>
 
-    <!-- Ushuaia II -->
-    <div class="section photo-gallery__section" data-anchor="ushuaia-2">
-      <div class="swiper photo-gallery__carousel" id="swiper-ushuaia-2">
-        <div class="swiper-wrapper">
-          <div class="swiper-slide photo-gallery__slide photo-gallery__slide--intro">
-            <div class="photo-gallery__intro">
-              <h2 class="photo-gallery__intro-heading">USHUAIA</h2>
-              <p class="photo-gallery__intro-tagline">segunda visita</p>
-            </div>
-          </div>
-          {ushuaia2Photos.map((img, i) => (
-            <div class="swiper-slide photo-gallery__slide">
-              <div class="photo-gallery__slide-media">
-                <img class="photo-gallery__image" src={`${import.meta.env.BASE_URL}Argentina/Ushuaia2/${img}`} alt={`Ushuaia — ${img.replace(/\.\w+$/, '').replace(/-/g, ' ')}`} loading={i === 0 ? 'eager' : 'lazy'} decoding={i === 0 ? 'sync' : 'async'} />
-              </div>
-              <div class="photo-gallery__caption">
-                {captions.Ushuaia2?.[img]?.title && <span class="photo-gallery__caption-title">{captions.Ushuaia2[img].title}</span>}
-                {captions.Ushuaia2?.[img]?.description && <span class="photo-gallery__caption-desc">{captions.Ushuaia2[img].description}</span>}
-              </div>
-            </div>
-          ))}
-        </div>
-        <div class="photo-gallery__counter" aria-live="polite"><span class="photo-gallery__counter-current">1</span><span class="photo-gallery__counter-sep">/</span><span class="photo-gallery__counter-total">{ushuaia2Photos.length + 1}</span></div>
-      </div>
-      <button id="prev-ushuaia-2" class="swiper-button-prev photo-gallery__nav photo-gallery__nav--prev" aria-label="Foto anterior"></button>
-      <button id="next-ushuaia-2" class="swiper-button-next photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
-    </div>
-
     <!-- Trelew / Tombo / Mártires -->
     <div class="section photo-gallery__section" data-anchor="trelew">
       <div class="swiper photo-gallery__carousel" id="swiper-trelew">
@@ -678,6 +650,34 @@ const jsonLd = {
       <button id="next-ushuaia-1" class="swiper-button-next photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
     </div>
 
+    <!-- Ushuaia II -->
+    <div class="section photo-gallery__section" data-anchor="ushuaia-2">
+      <div class="swiper photo-gallery__carousel" id="swiper-ushuaia-2">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide photo-gallery__slide photo-gallery__slide--intro">
+            <div class="photo-gallery__intro">
+              <h2 class="photo-gallery__intro-heading">USHUAIA</h2>
+              <p class="photo-gallery__intro-tagline">segunda visita</p>
+            </div>
+          </div>
+          {ushuaia2Photos.map((img, i) => (
+            <div class="swiper-slide photo-gallery__slide">
+              <div class="photo-gallery__slide-media">
+                <img class="photo-gallery__image" src={`${import.meta.env.BASE_URL}Argentina/Ushuaia2/${img}`} alt={`Ushuaia — ${img.replace(/\.\w+$/, '').replace(/-/g, ' ')}`} loading={i === 0 ? 'eager' : 'lazy'} decoding={i === 0 ? 'sync' : 'async'} />
+              </div>
+              <div class="photo-gallery__caption">
+                {captions.Ushuaia2?.[img]?.title && <span class="photo-gallery__caption-title">{captions.Ushuaia2[img].title}</span>}
+                {captions.Ushuaia2?.[img]?.description && <span class="photo-gallery__caption-desc">{captions.Ushuaia2[img].description}</span>}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div class="photo-gallery__counter" aria-live="polite"><span class="photo-gallery__counter-current">1</span><span class="photo-gallery__counter-sep">/</span><span class="photo-gallery__counter-total">{ushuaia2Photos.length + 1}</span></div>
+      </div>
+      <button id="prev-ushuaia-2" class="swiper-button-prev photo-gallery__nav photo-gallery__nav--prev" aria-label="Foto anterior"></button>
+      <button id="next-ushuaia-2" class="swiper-button-next photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
+    </div>
+
     <!-- Tandil -->
     <div class="section photo-gallery__section" data-anchor="tandil">
       <div class="swiper photo-gallery__carousel" id="swiper-tandil">
@@ -879,7 +879,6 @@ const jsonLd = {
     <button class="section-nav__item" data-anchor="messi"             data-label="Messi"             aria-label="Ir a Messi"></button>
     <button class="section-nav__item" data-anchor="steve-mccurry"     data-label="Steve McCurry"     aria-label="Ir a Steve McCurry"></button>
     <button class="section-nav__item" data-anchor="islas-malvinas"    data-label="Islas Malvinas"    aria-label="Ir a Islas Malvinas"></button>
-    <button class="section-nav__item" data-anchor="ushuaia-2"         data-label="Ushuaia II"        aria-label="Ir a Ushuaia II"></button>
     <button class="section-nav__item" data-anchor="trelew"            data-label="Trelew"            aria-label="Ir a Trelew"></button>
     <button class="section-nav__item" data-anchor="martin-garcia"     data-label="Martín García"     aria-label="Ir a Martín García"></button>
     <button class="section-nav__item" data-anchor="banksy"            data-label="Banksy"            aria-label="Ir a Banksy"></button>
@@ -890,6 +889,7 @@ const jsonLd = {
     <button class="section-nav__item" data-anchor="bariloche"         data-label="Bariloche"         aria-label="Ir a Bariloche"></button>
     <button class="section-nav__item" data-anchor="lautrec"           data-label="Lautrec"           aria-label="Ir a Lautrec"></button>
     <button class="section-nav__item" data-anchor="ushuaia-1"         data-label="Ushuaia I"         aria-label="Ir a Ushuaia I"></button>
+    <button class="section-nav__item" data-anchor="ushuaia-2"         data-label="Ushuaia II"        aria-label="Ir a Ushuaia II"></button>
     <button class="section-nav__item" data-anchor="tandil"            data-label="Tandil"            aria-label="Ir a Tandil"></button>
     <button class="section-nav__item" data-anchor="valadon"           data-label="Valadon"           aria-label="Ir a Valadon"></button>
     <button class="section-nav__item" data-anchor="patagonia-austral" data-label="Patagonia Austral" aria-label="Ir a Patagonia Austral"></button>
@@ -1355,7 +1355,6 @@ const jsonLd = {
     { anchor: 'messi',             label: 'Messi',             title: 'MESSI',             sub: ''                       },
     { anchor: 'steve-mccurry',     label: 'Steve McCurry',     title: 'STEVE MCCURRY',     sub: ''                       },
     { anchor: 'islas-malvinas',    label: 'Islas Malvinas',    title: 'ISLAS MALVINAS',    sub: 'Cinco Cruceros'         },
-    { anchor: 'ushuaia-2',         label: 'Ushuaia II',        title: 'USHUAIA',           sub: 'segunda visita'         },
     { anchor: 'trelew',            label: 'Trelew',            title: 'TRELEW',            sub: 'Tombo y Mártires'       },
     { anchor: 'martin-garcia',     label: 'Martín García',     title: 'MARTÍN GARCÍA',     sub: 'Isla'                   },
     { anchor: 'banksy',            label: 'Banksy',            title: 'BANKSY',            sub: ''                       },
@@ -1366,6 +1365,7 @@ const jsonLd = {
     { anchor: 'bariloche',         label: 'Bariloche',         title: 'BARILOCHE',         sub: 'en familia'             },
     { anchor: 'lautrec',           label: 'Lautrec',           title: 'LAUTREC',           sub: ''                       },
     { anchor: 'ushuaia-1',         label: 'Ushuaia I',         title: 'USHUAIA',           sub: 'primera visita'         },
+    { anchor: 'ushuaia-2',         label: 'Ushuaia II',        title: 'USHUAIA',           sub: 'segunda visita'         },
     { anchor: 'tandil',            label: 'Tandil',            title: 'TANDIL',            sub: 'Buenos Aires'           },
     { anchor: 'valadon',           label: 'Valadon',           title: 'VALADON',           sub: ''                       },
     { anchor: 'patagonia-austral', label: 'Patagonia Austral', title: 'PATAGONIA AUSTRAL', sub: ''                       },
