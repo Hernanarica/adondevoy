@@ -1,0 +1,63 @@
+---
+import type { GallerySectionData } from '../lib/gallery';
+
+type Props = GallerySectionData;
+
+const { anchor, folder, title, sub, body, photos, captions } = Astro.props;
+const base = import.meta.env.BASE_URL;
+const total = photos.length + 1; // +1 por el slide intro
+const cleanAlt = (img: string) => img.replace(/\.\w+$/, '').replace(/-/g, ' ');
+---
+
+<div
+  class="section photo-gallery__section"
+  data-anchor={anchor}
+  data-title={title}
+  data-sub={sub ?? ''}
+>
+  <div class="photo-gallery__viewport">
+    <div class="swiper photo-gallery__carousel" id={`swiper-${anchor}`}>
+      <div class="swiper-wrapper">
+
+        <div class="swiper-slide photo-gallery__slide photo-gallery__slide--intro">
+          <div class="photo-gallery__intro">
+            <h2 class="photo-gallery__intro-heading">{title}</h2>
+            {sub && <p class="photo-gallery__intro-tagline">{sub}</p>}
+            {body && <p class="photo-gallery__intro-body">{body}</p>}
+          </div>
+        </div>
+
+        {photos.map((img, i) => (
+          <div
+            class="swiper-slide photo-gallery__slide"
+            data-caption-title={captions[img]?.title ?? ''}
+            data-caption-desc={captions[img]?.description ?? ''}
+          >
+            <div class="photo-gallery__slide-media">
+              <img
+                class="photo-gallery__image"
+                src={`${base}${folder}/${img}`}
+                alt={`${title} — ${cleanAlt(img)}`}
+                loading={i === 0 ? 'eager' : 'lazy'}
+                decoding={i === 0 ? 'sync' : 'async'}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <div class="photo-gallery__footer">
+      <div class="photo-gallery__caption"></div>
+      <div class="photo-gallery__controls">
+        <span class="photo-gallery__counter">
+          <span class="photo-gallery__counter-current">1</span>
+          <span class="photo-gallery__counter-sep">/</span>
+          <span class="photo-gallery__counter-total">{total}</span>
+        </span>
+        <button class="photo-gallery__nav photo-gallery__nav--prev" aria-label="Foto anterior"></button>
+        <button class="photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
+      </div>
+    </div>
+  </div>
+</div>

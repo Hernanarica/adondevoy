@@ -1,0 +1,29 @@
+---
+import { countries, isSeparator } from '../data/countries';
+
+interface Props {
+  currentCountry: string;
+}
+
+const { currentCountry } = Astro.props;
+const base = import.meta.env.BASE_URL;
+---
+
+<nav class="country-nav" id="js-country-nav" aria-hidden="true">
+  <ul class="country-nav__list">
+    {countries.map(item => isSeparator(item)
+      ? <li class="country-nav__separator">{item.separator}</li>
+      : (
+        <li>
+          <a
+            class="country-nav__link"
+            href={`${base}${item.path}`}
+            data-country={item.country}
+            data-current={item.country === currentCountry ? '' : undefined}
+          >{item.label}</a>
+        </li>
+      )
+    )}
+  </ul>
+</nav>
+<div class="country-nav__backdrop" id="js-country-nav-backdrop"></div>

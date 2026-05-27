@@ -1,60 +1,84 @@
 ---
-import { readdirSync, readFileSync } from 'node:fs';
-import { join } from 'node:path';
-
-import 'fullpage.js/dist/fullpage.min.css';
-import 'swiper/css';
-import 'swiper/css/navigation';
-
-import Layout from '../layouts/Layout.astro';
-
-function getImages(folder: string): string[] {
-  const dir = join(process.cwd(), 'public', folder);
-  return readdirSync(dir)
-    .filter(f => /\.(jpe?g|png|webp|avif|gif)$/i.test(f) && !/^00\./i.test(f))
-    .sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }));
-}
-
-interface CaptionEntry { title?: string; description?: string }
-
-function getFolderCaptions(folder: string): Record<string, CaptionEntry> {
-  const jsonPath = join(process.cwd(), 'public', folder, 'fotos.json');
-  try {
-    const data: Array<{ photo: string; title: string; description: string }> =
-      JSON.parse(readFileSync(jsonPath, 'utf-8'));
-    return Object.fromEntries(
-      data.map(item => [item.photo, { title: item.title || undefined, description: item.description || undefined }])
-    );
-  } catch {
-    return {};
-  }
-}
-
-const piriápolisPhotos       = getImages('Uruguay/Piriapolis');
-const montevideoPhotos       = getImages('Uruguay/Montevideo');
-const lobosGorritiPhotos     = getImages('Uruguay/Lobos-Gorriti');
-const puntaDelEstePhotos     = getImages('Uruguay/Punta-del-Este');
-const anchorenaPhotos        = getImages('Uruguay/Anchorena');
-const cincoColoniasPhotos    = getImages('Uruguay/CincoColonias');
-const coloniaSacramentoPhotos = getImages('Uruguay/ColoniaSacramento');
-const cincoMuseosPhotos      = getImages('Uruguay/CincoMuseos');
-const carmeloPhotos          = getImages('Uruguay/Carmelo');
-
-const captions: Record<string, Record<string, CaptionEntry>> = {
-  Piriapolis:        getFolderCaptions('Uruguay/Piriapolis'),
-  Montevideo:        getFolderCaptions('Uruguay/Montevideo'),
-  LobosGorriti:      getFolderCaptions('Uruguay/Lobos-Gorriti'),
-  PuntaDelEste:      getFolderCaptions('Uruguay/Punta-del-Este'),
-  Anchorena:         getFolderCaptions('Uruguay/Anchorena'),
-  CincoColonias:     getFolderCaptions('Uruguay/CincoColonias'),
-  ColoniaSacramento: getFolderCaptions('Uruguay/ColoniaSacramento'),
-  CincoMuseos:       getFolderCaptions('Uruguay/CincoMuseos'),
-  Carmelo:           getFolderCaptions('Uruguay/Carmelo'),
-};
-
-const currentCountry = 'uruguay';
+import GalleryPage from '../layouts/GalleryPage.astro';
+import { getImages, getFolderCaptions, type GallerySectionData } from '../lib/gallery';
 
 const siteBase = 'https://adondevoy.com.ar';
+
+const sections: GallerySectionData[] = [
+  {
+    anchor: 'piriapolis',
+    folder: 'Uruguay/Piriapolis',
+    title: 'PIRIÁPOLIS',
+    label: 'Piriápolis',
+    photos: getImages('Uruguay/Piriapolis'),
+    captions: getFolderCaptions('Uruguay/Piriapolis'),
+  },
+  {
+    anchor: 'montevideo',
+    folder: 'Uruguay/Montevideo',
+    title: 'MONTEVIDEO',
+    label: 'Montevideo',
+    photos: getImages('Uruguay/Montevideo'),
+    captions: getFolderCaptions('Uruguay/Montevideo'),
+  },
+  {
+    anchor: 'lobos-gorriti',
+    folder: 'Uruguay/Lobos-Gorriti',
+    title: 'LOBOS Y GORRITI',
+    label: 'Lobos y Gorriti',
+    photos: getImages('Uruguay/Lobos-Gorriti'),
+    captions: getFolderCaptions('Uruguay/Lobos-Gorriti'),
+  },
+  {
+    anchor: 'punta-del-este',
+    folder: 'Uruguay/Punta-del-Este',
+    title: 'PUNTA DEL ESTE',
+    label: 'Punta del Este',
+    photos: getImages('Uruguay/Punta-del-Este'),
+    captions: getFolderCaptions('Uruguay/Punta-del-Este'),
+  },
+  {
+    anchor: 'anchorena',
+    folder: 'Uruguay/Anchorena',
+    title: 'ANCHORENA',
+    label: 'Anchorena',
+    photos: getImages('Uruguay/Anchorena'),
+    captions: getFolderCaptions('Uruguay/Anchorena'),
+  },
+  {
+    anchor: 'cinco-colonias',
+    folder: 'Uruguay/CincoColonias',
+    title: 'CINCO COLONIAS URUGUAYAS',
+    label: 'Cinco Colonias',
+    photos: getImages('Uruguay/CincoColonias'),
+    captions: getFolderCaptions('Uruguay/CincoColonias'),
+  },
+  {
+    anchor: 'colonia-sacramento',
+    folder: 'Uruguay/ColoniaSacramento',
+    title: 'COLONIA SACRAMENTO',
+    label: 'Colonia Sacramento',
+    photos: getImages('Uruguay/ColoniaSacramento'),
+    captions: getFolderCaptions('Uruguay/ColoniaSacramento'),
+  },
+  {
+    anchor: 'cinco-museos',
+    folder: 'Uruguay/CincoMuseos',
+    title: 'CINCO MUSEOS',
+    label: 'Cinco Museos',
+    photos: getImages('Uruguay/CincoMuseos'),
+    captions: getFolderCaptions('Uruguay/CincoMuseos'),
+  },
+  {
+    anchor: 'carmelo',
+    folder: 'Uruguay/Carmelo',
+    title: 'CARMELO',
+    label: 'Carmelo',
+    photos: getImages('Uruguay/Carmelo'),
+    captions: getFolderCaptions('Uruguay/Carmelo'),
+  },
+];
+
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'ImageGallery',
@@ -65,552 +89,13 @@ const jsonLd = {
 };
 ---
 
-<Layout
+<GalleryPage
+  currentCountry="uruguay"
+  sections={sections}
   title="Uruguay — Fotografía de viajes"
   description="Galería fotográfica de Uruguay: Montevideo, Punta del Este, Colonia Sacramento, Piriápolis, Carmelo y más. Fotografías de Orlando Moure."
   canonical={`${siteBase}/uruguay`}
   ogImage={`${siteBase}/Uruguay/Piriapolis/00.webp`}
   pageHeading="Uruguay — Fotografía de viajes"
   jsonLd={jsonLd}
->
-  <header class="site-header" id="js-site-header">
-    <div class="site-header__brand">
-      <span class="site-header__title" id="js-section-title">PIRIÁPOLIS</span>
-      <span class="site-header__sub" id="js-section-sub"></span>
-    </div>
-    <button class="site-header__menu-btn" id="js-menu-btn" aria-label="Menú" aria-expanded="false">
-      <span></span>
-      <span></span>
-      <span></span>
-    </button>
-  </header>
-
-  <nav class="country-nav" id="js-country-nav" aria-hidden="true">
-    <ul class="country-nav__list">
-      <li><a class="country-nav__link" href={`${import.meta.env.BASE_URL}`}        data-country="argentina">Argentina</a></li>
-      <li><a class="country-nav__link" href={`${import.meta.env.BASE_URL}brasil`}  data-country="brasil">Brasil</a></li>
-      <li><a class="country-nav__link" href={`${import.meta.env.BASE_URL}uruguay`} data-country="uruguay">Uruguay</a></li>
-      <li><a class="country-nav__link" href={`${import.meta.env.BASE_URL}chile`}   data-country="chile">Chile</a></li>
-      <li><a class="country-nav__link" href={`${import.meta.env.BASE_URL}bahamas`}        data-country="bahamas">Bahamas</a></li>
-      <li class="country-nav__separator">Europa</li>
-      <li><a class="country-nav__link" href={`${import.meta.env.BASE_URL}europa-rin`}     data-country="europa-rin">Crucero Rin</a></li>
-      <li><a class="country-nav__link" href={`${import.meta.env.BASE_URL}europa-danubio`} data-country="europa-danubio">Crucero Danubio</a></li>
-      <li><a class="country-nav__link" href={`${import.meta.env.BASE_URL}europa-baltico`} data-country="europa-baltico">Crucero Báltico</a></li>
-      <li><a class="country-nav__link" href={`${import.meta.env.BASE_URL}europa-oeste`}   data-country="europa-oeste">Europa Occidental</a></li>
-      <li><a class="country-nav__link" href={`${import.meta.env.BASE_URL}espana`}         data-country="espana">España</a></li>
-      <li><a class="country-nav__link" href={`${import.meta.env.BASE_URL}portugal`}       data-country="portugal">Portugal</a></li>
-    </ul>
-  </nav>
-  <div class="country-nav__backdrop" id="js-country-nav-backdrop"></div>
-
-  <div id="fullpage" class="photo-gallery">
-
-    <!-- Piriápolis -->
-    <div class="section photo-gallery__section" data-anchor="piriapolis">
-      <div class="swiper photo-gallery__carousel" id="swiper-piriapolis">
-        <div class="swiper-wrapper">
-          <div class="swiper-slide photo-gallery__slide photo-gallery__slide--intro">
-            <div class="photo-gallery__intro">
-              <h2 class="photo-gallery__intro-heading">PIRIÁPOLIS</h2>
-            </div>
-          </div>
-          {piriápolisPhotos.map((img, i) => (
-            <div class="swiper-slide photo-gallery__slide">
-              <div class="photo-gallery__slide-media">
-                <img class="photo-gallery__image" src={`${import.meta.env.BASE_URL}Uruguay/Piriapolis/${img}`} alt={`Piriápolis — ${img.replace(/\.\w+$/, '').replace(/-/g, ' ')}`} loading={i === 0 ? 'eager' : 'lazy'} decoding={i === 0 ? 'sync' : 'async'} />
-              </div>
-              <div class="photo-gallery__caption">
-                {captions.Piriapolis?.[img]?.title && <span class="photo-gallery__caption-title">{captions.Piriapolis[img].title}</span>}
-                {captions.Piriapolis?.[img]?.description && <span class="photo-gallery__caption-desc">{captions.Piriapolis[img].description}</span>}
-              </div>
-            </div>
-          ))}
-        </div>
-        <div class="photo-gallery__counter" aria-live="polite"><span class="photo-gallery__counter-current">1</span><span class="photo-gallery__counter-sep">/</span><span class="photo-gallery__counter-total">{piriápolisPhotos.length + 1}</span></div>
-      </div>
-      <button id="prev-piriapolis" class="swiper-button-prev photo-gallery__nav photo-gallery__nav--prev" aria-label="Foto anterior"></button>
-      <button id="next-piriapolis" class="swiper-button-next photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
-    </div>
-
-    <!-- Montevideo -->
-    <div class="section photo-gallery__section" data-anchor="montevideo">
-      <div class="swiper photo-gallery__carousel" id="swiper-montevideo">
-        <div class="swiper-wrapper">
-          <div class="swiper-slide photo-gallery__slide photo-gallery__slide--intro">
-            <div class="photo-gallery__intro">
-              <h2 class="photo-gallery__intro-heading">MONTEVIDEO</h2>
-            </div>
-          </div>
-          {montevideoPhotos.map((img, i) => (
-            <div class="swiper-slide photo-gallery__slide">
-              <div class="photo-gallery__slide-media">
-                <img class="photo-gallery__image" src={`${import.meta.env.BASE_URL}Uruguay/Montevideo/${img}`} alt={`Montevideo — ${img.replace(/\.\w+$/, '').replace(/-/g, ' ')}`} loading={i === 0 ? 'eager' : 'lazy'} decoding={i === 0 ? 'sync' : 'async'} />
-              </div>
-              <div class="photo-gallery__caption">
-                {captions.Montevideo?.[img]?.title && <span class="photo-gallery__caption-title">{captions.Montevideo[img].title}</span>}
-                {captions.Montevideo?.[img]?.description && <span class="photo-gallery__caption-desc">{captions.Montevideo[img].description}</span>}
-              </div>
-            </div>
-          ))}
-        </div>
-        <div class="photo-gallery__counter" aria-live="polite"><span class="photo-gallery__counter-current">1</span><span class="photo-gallery__counter-sep">/</span><span class="photo-gallery__counter-total">{montevideoPhotos.length + 1}</span></div>
-      </div>
-      <button id="prev-montevideo" class="swiper-button-prev photo-gallery__nav photo-gallery__nav--prev" aria-label="Foto anterior"></button>
-      <button id="next-montevideo" class="swiper-button-next photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
-    </div>
-
-    <!-- Lobos y Gorriti -->
-    <div class="section photo-gallery__section" data-anchor="lobos-gorriti">
-      <div class="swiper photo-gallery__carousel" id="swiper-lobos-gorriti">
-        <div class="swiper-wrapper">
-          <div class="swiper-slide photo-gallery__slide photo-gallery__slide--intro">
-            <div class="photo-gallery__intro">
-              <h2 class="photo-gallery__intro-heading">LOBOS Y GORRITI</h2>
-            </div>
-          </div>
-          {lobosGorritiPhotos.map((img, i) => (
-            <div class="swiper-slide photo-gallery__slide">
-              <div class="photo-gallery__slide-media">
-                <img class="photo-gallery__image" src={`${import.meta.env.BASE_URL}Uruguay/Lobos-Gorriti/${img}`} alt={`Lobos Gorriti — ${img.replace(/\.\w+$/, '').replace(/-/g, ' ')}`} loading={i === 0 ? 'eager' : 'lazy'} decoding={i === 0 ? 'sync' : 'async'} />
-              </div>
-              <div class="photo-gallery__caption">
-                {captions.LobosGorriti?.[img]?.title && <span class="photo-gallery__caption-title">{captions.LobosGorriti[img].title}</span>}
-                {captions.LobosGorriti?.[img]?.description && <span class="photo-gallery__caption-desc">{captions.LobosGorriti[img].description}</span>}
-              </div>
-            </div>
-          ))}
-        </div>
-        <div class="photo-gallery__counter" aria-live="polite"><span class="photo-gallery__counter-current">1</span><span class="photo-gallery__counter-sep">/</span><span class="photo-gallery__counter-total">{lobosGorritiPhotos.length + 1}</span></div>
-      </div>
-      <button id="prev-lobos-gorriti" class="swiper-button-prev photo-gallery__nav photo-gallery__nav--prev" aria-label="Foto anterior"></button>
-      <button id="next-lobos-gorriti" class="swiper-button-next photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
-    </div>
-
-    <!-- Punta del Este -->
-    <div class="section photo-gallery__section" data-anchor="punta-del-este">
-      <div class="swiper photo-gallery__carousel" id="swiper-punta-del-este">
-        <div class="swiper-wrapper">
-          <div class="swiper-slide photo-gallery__slide photo-gallery__slide--intro">
-            <div class="photo-gallery__intro">
-              <h2 class="photo-gallery__intro-heading">PUNTA DEL ESTE</h2>
-            </div>
-          </div>
-          {puntaDelEstePhotos.map((img, i) => (
-            <div class="swiper-slide photo-gallery__slide">
-              <div class="photo-gallery__slide-media">
-                <img class="photo-gallery__image" src={`${import.meta.env.BASE_URL}Uruguay/Punta-del-Este/${img}`} alt={`Punta del Este — ${img.replace(/\.\w+$/, '').replace(/-/g, ' ')}`} loading={i === 0 ? 'eager' : 'lazy'} decoding={i === 0 ? 'sync' : 'async'} />
-              </div>
-              <div class="photo-gallery__caption">
-                {captions.PuntaDelEste?.[img]?.title && <span class="photo-gallery__caption-title">{captions.PuntaDelEste[img].title}</span>}
-                {captions.PuntaDelEste?.[img]?.description && <span class="photo-gallery__caption-desc">{captions.PuntaDelEste[img].description}</span>}
-              </div>
-            </div>
-          ))}
-        </div>
-        <div class="photo-gallery__counter" aria-live="polite"><span class="photo-gallery__counter-current">1</span><span class="photo-gallery__counter-sep">/</span><span class="photo-gallery__counter-total">{puntaDelEstePhotos.length + 1}</span></div>
-      </div>
-      <button id="prev-punta-del-este" class="swiper-button-prev photo-gallery__nav photo-gallery__nav--prev" aria-label="Foto anterior"></button>
-      <button id="next-punta-del-este" class="swiper-button-next photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
-    </div>
-
-    <!-- Anchorena -->
-    <div class="section photo-gallery__section" data-anchor="anchorena">
-      <div class="swiper photo-gallery__carousel" id="swiper-anchorena">
-        <div class="swiper-wrapper">
-          <div class="swiper-slide photo-gallery__slide photo-gallery__slide--intro">
-            <div class="photo-gallery__intro">
-              <h2 class="photo-gallery__intro-heading">ANCHORENA</h2>
-            </div>
-          </div>
-          {anchorenaPhotos.map((img, i) => (
-            <div class="swiper-slide photo-gallery__slide">
-              <div class="photo-gallery__slide-media">
-                <img class="photo-gallery__image" src={`${import.meta.env.BASE_URL}Uruguay/Anchorena/${img}`} alt={`Anchorena — ${img.replace(/\.\w+$/, '').replace(/-/g, ' ')}`} loading={i === 0 ? 'eager' : 'lazy'} decoding={i === 0 ? 'sync' : 'async'} />
-              </div>
-              <div class="photo-gallery__caption">
-                {captions.Anchorena?.[img]?.title && <span class="photo-gallery__caption-title">{captions.Anchorena[img].title}</span>}
-                {captions.Anchorena?.[img]?.description && <span class="photo-gallery__caption-desc">{captions.Anchorena[img].description}</span>}
-              </div>
-            </div>
-          ))}
-        </div>
-        <div class="photo-gallery__counter" aria-live="polite"><span class="photo-gallery__counter-current">1</span><span class="photo-gallery__counter-sep">/</span><span class="photo-gallery__counter-total">{anchorenaPhotos.length + 1}</span></div>
-      </div>
-      <button id="prev-anchorena" class="swiper-button-prev photo-gallery__nav photo-gallery__nav--prev" aria-label="Foto anterior"></button>
-      <button id="next-anchorena" class="swiper-button-next photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
-    </div>
-
-    <!-- Cinco Colonias -->
-    <div class="section photo-gallery__section" data-anchor="cinco-colonias">
-      <div class="swiper photo-gallery__carousel" id="swiper-cinco-colonias">
-        <div class="swiper-wrapper">
-          <div class="swiper-slide photo-gallery__slide photo-gallery__slide--intro">
-            <div class="photo-gallery__intro">
-              <h2 class="photo-gallery__intro-heading">CINCO COLONIAS URUGUAYAS</h2>
-            </div>
-          </div>
-          {cincoColoniasPhotos.map((img, i) => (
-            <div class="swiper-slide photo-gallery__slide">
-              <div class="photo-gallery__slide-media">
-                <img class="photo-gallery__image" src={`${import.meta.env.BASE_URL}Uruguay/CincoColonias/${img}`} alt={`Cinco Colonias — ${img.replace(/\.\w+$/, '').replace(/-/g, ' ')}`} loading={i === 0 ? 'eager' : 'lazy'} decoding={i === 0 ? 'sync' : 'async'} />
-              </div>
-              <div class="photo-gallery__caption">
-                {captions.CincoColonias?.[img]?.title && <span class="photo-gallery__caption-title">{captions.CincoColonias[img].title}</span>}
-                {captions.CincoColonias?.[img]?.description && <span class="photo-gallery__caption-desc">{captions.CincoColonias[img].description}</span>}
-              </div>
-            </div>
-          ))}
-        </div>
-        <div class="photo-gallery__counter" aria-live="polite"><span class="photo-gallery__counter-current">1</span><span class="photo-gallery__counter-sep">/</span><span class="photo-gallery__counter-total">{cincoColoniasPhotos.length + 1}</span></div>
-      </div>
-      <button id="prev-cinco-colonias" class="swiper-button-prev photo-gallery__nav photo-gallery__nav--prev" aria-label="Foto anterior"></button>
-      <button id="next-cinco-colonias" class="swiper-button-next photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
-    </div>
-
-    <!-- Colonia Sacramento -->
-    <div class="section photo-gallery__section" data-anchor="colonia-sacramento">
-      <div class="swiper photo-gallery__carousel" id="swiper-colonia-sacramento">
-        <div class="swiper-wrapper">
-          <div class="swiper-slide photo-gallery__slide photo-gallery__slide--intro">
-            <div class="photo-gallery__intro">
-              <h2 class="photo-gallery__intro-heading">COLONIA SACRAMENTO</h2>
-            </div>
-          </div>
-          {coloniaSacramentoPhotos.map((img, i) => (
-            <div class="swiper-slide photo-gallery__slide">
-              <div class="photo-gallery__slide-media">
-                <img class="photo-gallery__image" src={`${import.meta.env.BASE_URL}Uruguay/ColoniaSacramento/${img}`} alt={`Colonia Sacramento — ${img.replace(/\.\w+$/, '').replace(/-/g, ' ')}`} loading={i === 0 ? 'eager' : 'lazy'} decoding={i === 0 ? 'sync' : 'async'} />
-              </div>
-              <div class="photo-gallery__caption">
-                {captions.ColoniaSacramento?.[img]?.title && <span class="photo-gallery__caption-title">{captions.ColoniaSacramento[img].title}</span>}
-                {captions.ColoniaSacramento?.[img]?.description && <span class="photo-gallery__caption-desc">{captions.ColoniaSacramento[img].description}</span>}
-              </div>
-            </div>
-          ))}
-        </div>
-        <div class="photo-gallery__counter" aria-live="polite"><span class="photo-gallery__counter-current">1</span><span class="photo-gallery__counter-sep">/</span><span class="photo-gallery__counter-total">{coloniaSacramentoPhotos.length + 1}</span></div>
-      </div>
-      <button id="prev-colonia-sacramento" class="swiper-button-prev photo-gallery__nav photo-gallery__nav--prev" aria-label="Foto anterior"></button>
-      <button id="next-colonia-sacramento" class="swiper-button-next photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
-    </div>
-
-    <!-- Cinco Museos -->
-    <div class="section photo-gallery__section" data-anchor="cinco-museos">
-      <div class="swiper photo-gallery__carousel" id="swiper-cinco-museos">
-        <div class="swiper-wrapper">
-          <div class="swiper-slide photo-gallery__slide photo-gallery__slide--intro">
-            <div class="photo-gallery__intro">
-              <h2 class="photo-gallery__intro-heading">CINCO MUSEOS</h2>
-            </div>
-          </div>
-          {cincoMuseosPhotos.map((img, i) => (
-            <div class="swiper-slide photo-gallery__slide">
-              <div class="photo-gallery__slide-media">
-                <img class="photo-gallery__image" src={`${import.meta.env.BASE_URL}Uruguay/CincoMuseos/${img}`} alt={`Cinco Museos — ${img.replace(/\.\w+$/, '').replace(/-/g, ' ')}`} loading={i === 0 ? 'eager' : 'lazy'} decoding={i === 0 ? 'sync' : 'async'} />
-              </div>
-              <div class="photo-gallery__caption">
-                {captions.CincoMuseos?.[img]?.title && <span class="photo-gallery__caption-title">{captions.CincoMuseos[img].title}</span>}
-                {captions.CincoMuseos?.[img]?.description && <span class="photo-gallery__caption-desc">{captions.CincoMuseos[img].description}</span>}
-              </div>
-            </div>
-          ))}
-        </div>
-        <div class="photo-gallery__counter" aria-live="polite"><span class="photo-gallery__counter-current">1</span><span class="photo-gallery__counter-sep">/</span><span class="photo-gallery__counter-total">{cincoMuseosPhotos.length + 1}</span></div>
-      </div>
-      <button id="prev-cinco-museos" class="swiper-button-prev photo-gallery__nav photo-gallery__nav--prev" aria-label="Foto anterior"></button>
-      <button id="next-cinco-museos" class="swiper-button-next photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
-    </div>
-
-    <!-- Carmelo -->
-    <div class="section photo-gallery__section" data-anchor="carmelo">
-      <div class="swiper photo-gallery__carousel" id="swiper-carmelo">
-        <div class="swiper-wrapper">
-          <div class="swiper-slide photo-gallery__slide photo-gallery__slide--intro">
-            <div class="photo-gallery__intro">
-              <h2 class="photo-gallery__intro-heading">CARMELO</h2>
-            </div>
-          </div>
-          {carmeloPhotos.map((img, i) => (
-            <div class="swiper-slide photo-gallery__slide">
-              <div class="photo-gallery__slide-media">
-                <img class="photo-gallery__image" src={`${import.meta.env.BASE_URL}Uruguay/Carmelo/${img}`} alt={`Carmelo — ${img.replace(/\.\w+$/, '').replace(/-/g, ' ')}`} loading={i === 0 ? 'eager' : 'lazy'} decoding={i === 0 ? 'sync' : 'async'} />
-              </div>
-              <div class="photo-gallery__caption">
-                {captions.Carmelo?.[img]?.title && <span class="photo-gallery__caption-title">{captions.Carmelo[img].title}</span>}
-                {captions.Carmelo?.[img]?.description && <span class="photo-gallery__caption-desc">{captions.Carmelo[img].description}</span>}
-              </div>
-            </div>
-          ))}
-        </div>
-        <div class="photo-gallery__counter" aria-live="polite"><span class="photo-gallery__counter-current">1</span><span class="photo-gallery__counter-sep">/</span><span class="photo-gallery__counter-total">{carmeloPhotos.length + 1}</span></div>
-      </div>
-      <button id="prev-carmelo" class="swiper-button-prev photo-gallery__nav photo-gallery__nav--prev" aria-label="Foto anterior"></button>
-      <button id="next-carmelo" class="swiper-button-next photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
-    </div>
-
-  </div>
-
-  <nav class="section-nav" aria-label="Secciones">
-    <button class="section-nav__item section-nav__item--active" data-anchor="piriapolis"        data-label="Piriápolis"        aria-label="Ir a Piriápolis"></button>
-    <button class="section-nav__item" data-anchor="montevideo"          data-label="Montevideo"          aria-label="Ir a Montevideo"></button>
-    <button class="section-nav__item" data-anchor="lobos-gorriti"       data-label="Lobos y Gorriti"     aria-label="Ir a Lobos y Gorriti"></button>
-    <button class="section-nav__item" data-anchor="punta-del-este"      data-label="Punta del Este"      aria-label="Ir a Punta del Este"></button>
-    <button class="section-nav__item" data-anchor="anchorena"           data-label="Anchorena"           aria-label="Ir a Anchorena"></button>
-    <button class="section-nav__item" data-anchor="cinco-colonias"      data-label="Cinco Colonias"      aria-label="Ir a Cinco Colonias"></button>
-    <button class="section-nav__item" data-anchor="colonia-sacramento"  data-label="Colonia Sacramento"  aria-label="Ir a Colonia Sacramento"></button>
-    <button class="section-nav__item" data-anchor="cinco-museos"        data-label="Cinco Museos"        aria-label="Ir a Cinco Museos"></button>
-    <button class="section-nav__item" data-anchor="carmelo"             data-label="Carmelo"             aria-label="Ir a Carmelo"></button>
-  </nav>
-</Layout>
-
-<style>
-  :root {
-    --swiper-theme-color: #ffffff;
-    --swiper-navigation-color: rgba(255, 255, 255, 0.85);
-    --swiper-navigation-size: 36px;
-    --swiper-navigation-sides-offset: 24px;
-    --caption-height: 80px;
-    --header-height: 60px;
-    --nav-col-width: 160px;
-    --left-margin: 80px;
-  }
-
-  .site-header {
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    height: var(--header-height);
-    z-index: 50;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 24px 0 32px;
-    background: linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, transparent 100%);
-    pointer-events: none;
-  }
-  .site-header__brand { display: flex; align-items: baseline; gap: 10px; }
-  @keyframes brand-leave { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-7px); } }
-  @keyframes brand-enter { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: translateY(0); } }
-  .site-header__brand--leaving { animation: brand-leave 0.22s ease forwards; }
-  .site-header__brand--entering { animation: brand-enter 0.28s ease forwards; }
-  .site-header__title { font-family: 'Helvetica Neue', Arial, sans-serif; font-weight: 700; font-size: 0.95rem; letter-spacing: 0.24em; text-transform: uppercase; color: #ffffff; text-shadow: 0 1px 8px rgba(0,0,0,0.5); }
-  .site-header__sub { font-family: 'Georgia', serif; font-style: italic; font-size: 0.72rem; letter-spacing: 0.08em; color: rgba(255,255,255,0.7); text-shadow: 0 1px 6px rgba(0,0,0,0.5); }
-  .site-header__menu-btn {
-    pointer-events: all; background: none; border: none; cursor: pointer;
-    display: flex; flex-direction: column; gap: 5px; padding: 8px;
-    span { display: block; width: 22px; height: 2px; background: rgba(255,255,255,0.85); border-radius: 1px; transition: background 0.2s; }
-    &:hover span { background: #ffffff; }
-  }
-
-  .section-nav {
-    position: fixed; right: 0; width: var(--nav-col-width);
-    top: 50%; transform: translateY(-50%);
-    z-index: 50; display: flex; flex-direction: column; gap: 4px;
-    align-items: flex-end; padding-right: 24px; box-sizing: border-box;
-  }
-  .section-nav__item {
-    position: relative; background: none; border: none; cursor: pointer; padding: 4px 0;
-    color: rgba(255,255,255,0.4);
-    font-family: 'Helvetica Neue', Arial, sans-serif;
-    font-size: 11px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase;
-    white-space: nowrap; text-align: right;
-    text-shadow: 0 1px 4px rgba(0,0,0,0.6);
-    transition: color 0.25s ease;
-    &::before { content: attr(data-label); }
-    &:hover { color: rgba(255,255,255,0.9); }
-    &.section-nav__item--active { color: #ffffff; }
-  }
-
-  :global(.fp-watermark) { display: none; }
-  :global(#fp-nav ul li a span), :global(#fp-nav ul li:hover a span) { background: rgba(255,255,255,0.7); box-shadow: 0 0 0 1.5px rgba(0,0,0,0.35), 0 1px 6px rgba(0,0,0,0.5); }
-  :global(#fp-nav ul li a.active span) { background: #ffffff; width: 10px; height: 10px; margin: -5px 0 0 -5px; box-shadow: 0 0 0 1.5px rgba(0,0,0,0.25), 0 2px 8px rgba(0,0,0,0.6); }
-  :global(#fp-nav .fp-tooltip) { color: #ffffff; font-family: 'Georgia', serif; font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; text-shadow: 0 1px 4px rgba(0,0,0,0.7); }
-  :global(.fp-section.photo-gallery__section) { background: #000; }
-
-  .photo-gallery {
-    .photo-gallery__carousel {
-      position: relative; width: 1000px;
-      margin-left: calc((100% - var(--nav-col-width) - 1000px) / 2);
-      height: calc(100vh - var(--header-height) - 120px);
-      margin-top: calc(var(--header-height) + 56px);
-      --swiper-navigation-top-offset: calc(50% - calc(var(--caption-height) / 2));
-    }
-    .photo-gallery__slide {
-      height: 100%; overflow: hidden;
-      &.photo-gallery__slide--intro { display: flex; align-items: center; justify-content: center; background: #000; }
-      &:not(.photo-gallery__slide--intro) { display: flex; flex-direction: column; }
-    }
-    .photo-gallery__slide-media { flex: 1; min-height: 0; overflow: hidden; position: relative; background: #000; }
-    .photo-gallery__image { display: block; width: 100%; height: 100%; object-fit: contain; object-position: center; user-select: none; -webkit-user-drag: none; pointer-events: none; }
-    .photo-gallery__caption { height: var(--caption-height); flex-shrink: 0; display: flex; flex-direction: column; justify-content: center; gap: 3px; padding: 0 48px; background: #000; }
-    .photo-gallery__caption-title { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 0.62rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.4); }
-    .photo-gallery__caption-desc { font-family: Arial, sans-serif; font-size: 15px; font-style: normal; letter-spacing: 0.06em; color: rgba(255,255,255,0.75); }
-    .photo-gallery__carousel::after {
-      content: ''; position: absolute; inset: 0 0 var(--caption-height) 0;
-      background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.15) 30%, rgba(0,0,0,0) 60%);
-      z-index: 10; pointer-events: none; opacity: 1; transition: opacity 0.3s ease;
-    }
-    .photo-gallery__carousel--intro-active {
-      &::after { opacity: 0; }
-      .photo-gallery__nav { --swiper-navigation-color: rgba(122,173,223,0.7); }
-    }
-    .photo-gallery__counter { position: absolute; bottom: calc(var(--caption-height) + 12px); right: 48px; z-index: 20; color: rgba(255,255,255,0.65); font-family: 'Georgia', serif; font-size: 0.8rem; letter-spacing: 0.12em; pointer-events: none; transition: color 0.3s ease; }
-    .photo-gallery__carousel--intro-active .photo-gallery__counter { color: rgba(122,173,223,0.8); }
-    .photo-gallery__counter-sep { margin: 0 4px; }
-    .photo-gallery__nav {
-      position: absolute; bottom: 16px; background: none; border: none; padding: 0;
-      cursor: pointer; z-index: 30; opacity: 0.85; filter: drop-shadow(0 1px 4px rgba(0,0,0,0.8)); transition: opacity 0.2s ease;
-      &.photo-gallery__nav--prev { left: calc(var(--left-margin) + 8px); }
-      &.photo-gallery__nav--next { right: calc(var(--nav-col-width) + 8px); left: auto; }
-      &:hover { opacity: 1; }
-    }
-    .photo-gallery__intro { text-align: center; padding: 2rem; max-width: 700px; }
-    .photo-gallery__intro-heading { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: clamp(1.8rem, 5vw, 3.5rem); font-weight: 400; color: #7aaddf; letter-spacing: 0.04em; margin: 0; line-height: 1; }
-    .photo-gallery__intro-tagline { font-family: 'Georgia', 'Times New Roman', serif; font-style: italic; font-size: clamp(1rem, 2vw, 1.35rem); color: #7aaddf; margin: 0.5em 0 0; }
-  }
-
-  .country-nav {
-    position: fixed; top: 0; right: 0; width: 200px; height: 100%;
-    background: rgba(0,0,0,0.88); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-    transform: translateX(100%); transition: transform 0.3s ease; z-index: 200;
-    padding: 4rem 2rem; box-sizing: border-box;
-    &.is-open { transform: translateX(0); }
-  }
-  .country-nav__backdrop { position: fixed; inset: 0; z-index: 199; display: none; &.is-open { display: block; } }
-  .country-nav__list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 4px; }
-  .country-nav__link {
-    display: block; padding: 0.75rem 0; color: rgba(255,255,255,0.45); text-decoration: none;
-    font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 11px; font-weight: 600;
-    letter-spacing: 0.28em; text-transform: uppercase; transition: color 0.2s ease;
-    &[data-current] { color: #ffffff; }
-    &:hover { color: rgba(255,255,255,0.85); }
-  }
-  .country-nav__separator {
-    padding: 0.75rem 0 0.25rem; margin-top: 0.5rem;
-    color: rgba(255,255,255,0.25); font-family: 'Helvetica Neue', Arial, sans-serif;
-    font-size: 0.5rem; font-weight: 600; letter-spacing: 0.3em; text-transform: uppercase;
-    border-top: 1px solid rgba(255,255,255,0.1); list-style: none;
-  }
-
-  @media (max-width: 768px) {
-    .site-header { padding: 0 16px 0 20px; }
-    .section-nav { right: 12px; left: auto; top: 50%; bottom: auto; transform: translateY(-50%); flex-direction: column; width: auto; gap: 8px; align-items: center; padding-right: 0; }
-    .section-nav__item {
-      width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.3); padding: 0; font-size: 0;
-      &::before { content: none; }
-      &:hover { background: rgba(255,255,255,0.65); transform: scale(1.25); }
-      &.section-nav__item--active { background: #ffffff; transform: scale(1.2); box-shadow: 0 0 6px rgba(255,255,255,0.5); }
-    }
-    .photo-gallery {
-      .photo-gallery__carousel { width: 100%; margin-left: 0; height: calc(100dvh - var(--header-height) - 40px); margin-top: calc(var(--header-height) + 8px); }
-      .photo-gallery__nav { display: none; }
-      .photo-gallery__caption { padding: 0 20px; }
-    }
-  }
-</style>
-
-<script>
-  import fullpage from 'fullpage.js';
-  import Swiper from 'swiper';
-  import { Navigation, Keyboard } from 'swiper/modules';
-
-  const SECTIONS = [
-    { anchor: 'piriapolis',        label: 'Piriápolis',        title: 'PIRIÁPOLIS',              sub: '' },
-    { anchor: 'montevideo',        label: 'Montevideo',        title: 'MONTEVIDEO',              sub: '' },
-    { anchor: 'lobos-gorriti',     label: 'Lobos y Gorriti',   title: 'LOBOS Y GORRITI',         sub: '' },
-    { anchor: 'punta-del-este',    label: 'Punta del Este',    title: 'PUNTA DEL ESTE',          sub: '' },
-    { anchor: 'anchorena',         label: 'Anchorena',         title: 'ANCHORENA',               sub: '' },
-    { anchor: 'cinco-colonias',    label: 'Cinco Colonias',    title: 'CINCO COLONIAS URUGUAYAS', sub: '' },
-    { anchor: 'colonia-sacramento', label: 'Colonia Sacramento', title: 'COLONIA SACRAMENTO',   sub: '' },
-    { anchor: 'cinco-museos',      label: 'Cinco Museos',      title: 'CINCO MUSEOS',            sub: '' },
-    { anchor: 'carmelo',           label: 'Carmelo',           title: 'CARMELO',                 sub: '' },
-  ];
-
-  function updateSectionUI(anchor: string): void {
-    const section = SECTIONS.find(s => s.anchor === anchor);
-    if (!section) return;
-    const titleEl = document.getElementById('js-section-title');
-    const subEl   = document.getElementById('js-section-sub');
-    if (titleEl) titleEl.textContent = section.title;
-    if (subEl)   subEl.textContent   = section.sub;
-    document.querySelectorAll<HTMLElement>('.section-nav__item').forEach(item => {
-      item.classList.toggle('section-nav__item--active', item.dataset.anchor === anchor);
-    });
-  }
-
-  function updateCounter(swiper: InstanceType<typeof Swiper>): void {
-    const current = swiper.el.querySelector<HTMLElement>('.photo-gallery__counter-current');
-    if (current) current.textContent = String(swiper.activeIndex + 1);
-  }
-
-  function updateIntroState(swiper: InstanceType<typeof Swiper>): void {
-    swiper.el.classList.toggle('photo-gallery__carousel--intro-active', swiper.activeIndex === 0);
-  }
-
-  function makeHandlers(anchor: string) {
-    return {
-      init(this: InstanceType<typeof Swiper>) { updateCounter(this); updateIntroState(this); },
-      slideChange(this: InstanceType<typeof Swiper>) { savedIndex[anchor] = this.activeIndex; updateCounter(this); updateIntroState(this); },
-    };
-  }
-
-  const brand = document.querySelector<HTMLElement>('.site-header__brand');
-  function animateBrandLeave(): void { brand?.classList.remove('site-header__brand--entering'); brand?.classList.add('site-header__brand--leaving'); }
-  function animateBrandEnter(): void { brand?.classList.remove('site-header__brand--leaving'); brand?.classList.add('site-header__brand--entering'); }
-
-  const savedIndex: Record<string, number> = {};
-  const swipers: Record<string, InstanceType<typeof Swiper>> = {};
-
-  for (const { anchor } of SECTIONS) {
-    savedIndex[anchor] = 0;
-    swipers[anchor] = new Swiper(`#swiper-${anchor}`, {
-      modules: [Navigation, Keyboard],
-      direction: 'horizontal',
-      touchReleaseOnEdges: true,
-      resistanceRatio: 0,
-      navigation: { prevEl: `#prev-${anchor}`, nextEl: `#next-${anchor}` },
-      keyboard: { enabled: true, onlyInViewport: true },
-      a11y: { enabled: true },
-      preloadImages: false,
-      on: makeHandlers(anchor),
-    });
-    swipers[anchor].disable();
-  }
-
-  swipers[SECTIONS[0].anchor].enable();
-  updateSectionUI(SECTIONS[0].anchor);
-
-  new fullpage('#fullpage', {
-    autoScrolling: true,
-    fitToSection: true,
-    navigation: false,
-    anchors: SECTIONS.map(s => s.anchor),
-    scrollingSpeed: 700,
-    keyboardScrolling: true,
-    onLeave() { Object.values(swipers).forEach(s => s.disable()); animateBrandLeave(); },
-    afterLoad(_origin: unknown, destination: { anchor: string }) {
-      const swiper = swipers[destination.anchor];
-      swiper.enable();
-      swiper.slideTo(savedIndex[destination.anchor], 0);
-      updateSectionUI(destination.anchor);
-      animateBrandEnter();
-    },
-  });
-
-  document.querySelectorAll<HTMLButtonElement>('.section-nav__item').forEach(item => {
-    item.addEventListener('click', () => { if (item.dataset.anchor) (window as any).fullpage_api?.moveTo(item.dataset.anchor); });
-  });
-
-  const currentCountry = 'uruguay';
-  const menuBtn    = document.getElementById('js-menu-btn');
-  const countryNav = document.getElementById('js-country-nav');
-  const backdrop   = document.getElementById('js-country-nav-backdrop');
-
-  function openMenu(): void { countryNav?.classList.add('is-open'); backdrop?.classList.add('is-open'); countryNav?.setAttribute('aria-hidden', 'false'); menuBtn?.setAttribute('aria-expanded', 'true'); }
-  function closeMenu(): void { countryNav?.classList.remove('is-open'); backdrop?.classList.remove('is-open'); countryNav?.setAttribute('aria-hidden', 'true'); menuBtn?.setAttribute('aria-expanded', 'false'); }
-
-  menuBtn?.addEventListener('click', () => { countryNav?.classList.contains('is-open') ? closeMenu() : openMenu(); });
-  backdrop?.addEventListener('click', closeMenu);
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMenu(); });
-
-  document.querySelector<HTMLElement>(`[data-country="${currentCountry}"]`)?.setAttribute('data-current', '');
-</script>
+/>
