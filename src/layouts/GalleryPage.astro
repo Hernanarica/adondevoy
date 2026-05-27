@@ -68,6 +68,16 @@ const first = sections[0];
       ></button>
     ))}
   </nav>
+
+  <aside class="ad-bar" aria-label="Publicidad">
+    <ins
+      class="adsbygoogle"
+      style="display:inline-block;width:728px;height:90px"
+      data-ad-client="ca-pub-7773468020149242"
+      data-ad-slot="6941729357"
+    ></ins>
+  </aside>
+  <script is:inline>(adsbygoogle = window.adsbygoogle || []).push({});</script>
 </Layout>
 
 <script>
@@ -251,6 +261,21 @@ const first = sections[0];
     --caption-height: 80px;
     --header-height: 60px;
     --nav-col-width: 160px;
+    --ad-height: 90px;
+  }
+
+  /* ─── Ad bar (AdSense, fija abajo) ─── */
+  .ad-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: var(--ad-height);
+    z-index: 60;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #000;
   }
 
   /* ─── Site header ─── */
@@ -394,7 +419,7 @@ const first = sections[0];
     .photo-gallery__viewport {
       width: 1000px;
       margin-left: calc((100% - var(--nav-col-width) - 1000px) / 2);
-      height: calc(100vh - var(--header-height) - 120px);
+      height: calc(100vh - var(--header-height) - 120px - var(--ad-height));
       margin-top: calc(var(--header-height) + 56px);
       display: flex;
       flex-direction: column;
@@ -675,6 +700,10 @@ const first = sections[0];
   @media (max-width: 768px) {
     .site-header {
       padding: 0 16px 0 20px;
+    }
+
+    .ad-bar {
+      display: none;
     }
 
     /* Bullets verticales pegados al margen derecho */
