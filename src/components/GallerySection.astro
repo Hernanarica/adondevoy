@@ -24,8 +24,10 @@ const cleanAlt = (img: string) => img.replace(/\.\w+$/, '').replace(/-/g, ' ');
           <span class="photo-gallery__counter-sep">/</span>
           <span class="photo-gallery__counter-total">{total}</span>
         </span>
-        <button class="photo-gallery__nav photo-gallery__nav--prev" aria-label="Foto anterior"></button>
-        <button class="photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
+        <div class="photo-gallery__nav-arrows">
+          <button class="photo-gallery__nav photo-gallery__nav--prev" aria-label="Foto anterior"></button>
+          <button class="photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
+        </div>
       </div>
     </div>
 

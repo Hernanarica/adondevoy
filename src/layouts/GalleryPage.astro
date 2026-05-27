@@ -483,9 +483,16 @@ const first = sections[0];
 
     .photo-gallery__controls {
       display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 18px;
+      gap: 35px;
       flex-shrink: 0;
+    }
+
+    .photo-gallery__nav-arrows {
+      display: flex;
+      align-items: center;
+      gap: 15px;
     }
 
     .photo-gallery__viewport--intro-active {
@@ -496,7 +503,7 @@ const first = sections[0];
     .photo-gallery__counter {
       color: rgba(255, 255, 255, 0.65);
       font-family: 'Georgia', serif;
-      font-size: 0.8rem;
+      font-size: 0.9rem;
       letter-spacing: 0.12em;
       white-space: nowrap;
       font-variant-numeric: tabular-nums;
@@ -527,10 +534,10 @@ const first = sections[0];
 
       &::after {
         content: '';
-        width: 9px;
-        height: 9px;
-        border-right: 2px solid var(--swiper-navigation-color);
-        border-bottom: 2px solid var(--swiper-navigation-color);
+        width: 15px;
+        height: 15px;
+        border-right: 2.8px solid var(--swiper-navigation-color);
+        border-bottom: 2.8px solid var(--swiper-navigation-color);
         filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.8));
       }
 
