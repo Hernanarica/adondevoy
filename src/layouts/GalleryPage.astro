@@ -251,8 +251,8 @@ const first = sections[0];
     --caption-height: 80px;
     --header-height: 60px;
     --nav-col-width: 160px;
-    --viewport-top-extra: 56px;
-    --viewport-bottom-clearance: 120px;
+    --viewport-top-extra: 12px;
+    --viewport-bottom-clearance: 80px;
   }
 
   /* ─── Site header ─── */
@@ -450,7 +450,7 @@ const first = sections[0];
 
     /* ─── Footer: caption + controles en la misma barra ─── */
     .photo-gallery__footer {
-      height: var(--caption-height);
+      min-height: var(--caption-height);
       flex-shrink: 0;
       display: flex;
       align-items: center;
@@ -669,16 +669,16 @@ const first = sections[0];
   @media (max-height: 700px) {
     :root {
       --caption-height: 64px;
-      --viewport-top-extra: 32px;
-      --viewport-bottom-clearance: 88px;
+      --viewport-top-extra: 16px;
+      --viewport-bottom-clearance: 60px;
     }
   }
 
   @media (max-height: 580px) {
     :root {
       --caption-height: 52px;
-      --viewport-top-extra: 16px;
-      --viewport-bottom-clearance: 64px;
+      --viewport-top-extra: 8px;
+      --viewport-bottom-clearance: 44px;
     }
   }
 
