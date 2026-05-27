@@ -47,13 +47,6 @@ const fullTitle = title.includes(siteName) ? title : `${title} | ${siteName}`;
 		{canonical && <link rel="canonical" href={canonical} />}
 		{jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
 
-		<script
-			async
-			src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7773468020149242"
-			crossorigin="anonymous"
-			is:inline
-		></script>
-
 		<link rel="icon" type="image/x-icon" href="/assets/favicon/favicon.ico" />
 		<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon/favicon-32x32.png" />
 		<link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon/favicon-16x16.png" />
