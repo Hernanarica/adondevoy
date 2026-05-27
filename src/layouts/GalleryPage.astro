@@ -251,6 +251,8 @@ const first = sections[0];
     --caption-height: 80px;
     --header-height: 60px;
     --nav-col-width: 160px;
+    --viewport-top-extra: 56px;
+    --viewport-bottom-clearance: 120px;
   }
 
   /* ─── Site header ─── */
@@ -394,10 +396,11 @@ const first = sections[0];
     .photo-gallery__viewport {
       width: 1000px;
       margin-left: calc((100% - var(--nav-col-width) - 1000px) / 2);
-      height: calc(100vh - var(--header-height) - 120px);
-      margin-top: calc(var(--header-height) + 56px);
+      height: calc(100vh - var(--header-height) - var(--viewport-bottom-clearance));
+      margin-top: calc(var(--header-height) + var(--viewport-top-extra));
       display: flex;
       flex-direction: column;
+      gap: 16px;
     }
 
     .photo-gallery__carousel {
@@ -435,9 +438,11 @@ const first = sections[0];
     .photo-gallery__image {
       display: block;
       width: 100%;
-      height: 100%;
-      object-fit: contain;
-      object-position: center;
+      height: auto;
+      position: absolute;
+      top: 50%;
+      left: 0;
+      transform: translateY(-50%);
       user-select: none;
       -webkit-user-drag: none;
       pointer-events: none;
@@ -660,6 +665,23 @@ const first = sections[0];
     border-top: 1px solid rgba(255,255,255,0.1); list-style: none;
   }
 
+  /* ─── Pantallas cortas (laptops con poco alto) ─── */
+  @media (max-height: 700px) {
+    :root {
+      --caption-height: 64px;
+      --viewport-top-extra: 32px;
+      --viewport-bottom-clearance: 88px;
+    }
+  }
+
+  @media (max-height: 580px) {
+    :root {
+      --caption-height: 52px;
+      --viewport-top-extra: 16px;
+      --viewport-bottom-clearance: 64px;
+    }
+  }
+
   /* ─── Mobile ─── */
   @media (max-width: 768px) {
     .site-header {
@@ -682,6 +704,7 @@ const first = sections[0];
         margin-left: 0;
         height: calc(100dvh - var(--header-height) - 40px);
         margin-top: calc(var(--header-height) + 8px);
+        gap: 12px;
       }
 
       .photo-gallery__nav {
