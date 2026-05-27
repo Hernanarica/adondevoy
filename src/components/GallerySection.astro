@@ -16,6 +16,19 @@ const cleanAlt = (img: string) => img.replace(/\.\w+$/, '').replace(/-/g, ' ');
   data-sub={sub ?? ''}
 >
   <div class="photo-gallery__viewport">
+    <div class="photo-gallery__footer">
+      <div class="photo-gallery__caption"></div>
+      <div class="photo-gallery__controls">
+        <span class="photo-gallery__counter">
+          <span class="photo-gallery__counter-current">1</span>
+          <span class="photo-gallery__counter-sep">/</span>
+          <span class="photo-gallery__counter-total">{total}</span>
+        </span>
+        <button class="photo-gallery__nav photo-gallery__nav--prev" aria-label="Foto anterior"></button>
+        <button class="photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
+      </div>
+    </div>
+
     <div class="swiper photo-gallery__carousel" id={`swiper-${anchor}`}>
       <div class="swiper-wrapper">
 
@@ -44,19 +57,6 @@ const cleanAlt = (img: string) => img.replace(/\.\w+$/, '').replace(/-/g, ' ');
             </div>
           </div>
         ))}
-      </div>
-    </div>
-
-    <div class="photo-gallery__footer">
-      <div class="photo-gallery__caption"></div>
-      <div class="photo-gallery__controls">
-        <span class="photo-gallery__counter">
-          <span class="photo-gallery__counter-current">1</span>
-          <span class="photo-gallery__counter-sep">/</span>
-          <span class="photo-gallery__counter-total">{total}</span>
-        </span>
-        <button class="photo-gallery__nav photo-gallery__nav--prev" aria-label="Foto anterior"></button>
-        <button class="photo-gallery__nav photo-gallery__nav--next" aria-label="Foto siguiente"></button>
       </div>
     </div>
   </div>
