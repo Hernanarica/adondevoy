@@ -1,32 +1,32 @@
 [
   {
+    "photo": "01.webp",
     "title": "REGRESO A ARGENTINA",
-    "description": "",
-    "photo": "1-cafe.webp"
+    "description": ""
   },
   {
+    "photo": "02.webp",
     "title": "REGRESO A ARGENTINA",
-    "description": "",
-    "photo": "2-final.webp"
+    "description": ""
   },
   {
+    "photo": "03.webp",
     "title": "REGRESO A ARGENTINA",
-    "description": "",
-    "photo": "3-cena.webp"
+    "description": ""
   },
   {
+    "photo": "04.webp",
     "title": "REGRESO A ARGENTINA",
-    "description": "",
-    "photo": "4-aterrizaje.webp"
+    "description": ""
   },
   {
+    "photo": "05.webp",
     "title": "REGRESO A ARGENTINA",
-    "description": "",
-    "photo": "5-estacionamiento.webp"
+    "description": ""
   },
   {
+    "photo": "06.webp",
     "title": "REGRESO A ARGENTINA",
-    "description": "",
-    "photo": "6-fin.webp"
+    "description": ""
   }
 ]
