@@ -12,17 +12,17 @@
   {
     "photo": "03.webp",
     "title": "NORTE DE ESPAÑA",
-    "description": "Mi asiento 4A (IZQ). Vuelo IBERIA 102 ya despegado (DER)."
+    "description": "Esperando la llamada para abordar el vuelo."
   },
   {
     "photo": "04.webp",
     "title": "NORTE DE ESPAÑA",
-    "description": "Almuerzo elegido: Vitel Toné (IZQ) y Brótola con puré de calabaza (DER)."
+    "description": "Mi asiento 4A (IZQ). Vuelo IBERIA 102 ya despegado (DER)."
   },
   {
     "photo": "05.webp",
     "title": "NORTE DE ESPAÑA",
-    "description": "Aterrizaje nocturno en Madrid a las 06 am."
+    "description": "Almuerzo elegido: Vitel Toné (IZQ) y Brótola con puré de calabaza (DER)."
   },
   {
     "photo": "06.webp",
@@ -32,10 +32,15 @@
   {
     "photo": "07.webp",
     "title": "NORTE DE ESPAÑA",
-    "description": "El Airbus 350-900 estacionando en la plataforma de Iberia."
+    "description": "Aterrizaje nocturno en Madrid a las 06 am."
   },
   {
     "photo": "08.webp",
+    "title": "NORTE DE ESPAÑA",
+    "description": "El Airbus 350-900 estacionando en la plataforma de Iberia."
+  },
+  {
+    "photo": "10.webp",
     "title": "NORTE DE ESPAÑA",
     "description": "Llegamos al hotel (IZQ) en la Gran Vía de Madrid. Una sala de estar (DER) del hotel EMPERADOR."
   }
