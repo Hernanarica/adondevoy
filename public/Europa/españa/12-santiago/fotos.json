@@ -86,7 +86,11 @@
   },
   {
     "title": "SANTIAGO MEDIEVAL",
+<<<<<<< HEAD
     "description": "SANTIAGO MEDIEVAL - Vestimenta (IZQ) y simbología (DER) de los CABALLEROS TEMPLARIOS.",
+=======
+    "description": "SANTIAGO MEDIEVAL - RUA NOVA: Un hermoso día de sol en esta transitada calle, favorita tanto de los locales como de los turistas. ¿A qué se debe tanta afluencia de gente? A su conexión directa con la Catedral de Santiago de Compostela.",
+>>>>>>> 37cceff (feat: add descriptions for photos in Santiago and Oporto to enhance context and detail)
     "photo": "18.webp"
   },
   {
