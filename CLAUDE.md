@@ -22,10 +22,28 @@ Gestor de paquetes: **pnpm**. Node ≥ 22.12.0.
 ## Convención de datos
 
 - Las fotos viven en `public/<País>/<Destino>/` como `.webp`.
-- **`00.webp` es la portada / OG image** y se excluye del carrusel vía la regex `^00\.` en `getImages`. **No renombrar.**
+- **`00.webp` es la portada / OG image** *y* aparece como **primer slide de imagen del carrusel** (slot **2/N** en el contador, justo después del slide intro autogenerada). Además se referencia como `ogImage` en el `<head>` para la vista previa en redes. **No renombrar.**
 - Orden natural-numérico (`localeCompare(..., { numeric: true })`): `15.webp`, `15a.webp`, `15b.webp` se intercalan correctamente sin renumerar.
 - `fotos.json` opcional por carpeta, con array de `{ photo, title, description }`. Si falta el archivo o una entrada, el caption simplemente no se renderiza — el build no falla.
 - El `src` de cada imagen se arma en `GallerySection.astro` como `` `${import.meta.env.BASE_URL}${folder}/${img}` `` para que el sitio siga funcionando si en el futuro se configura un `base` en `astro.config.mjs`.
+
+## Numeración "FOTO N" del cliente vs. archivos
+
+El cliente entrega los textos en .doc numerados como "FOTO 1", "FOTO 2", … Esos números **NO** son los nombres de archivo. El contador del carrusel se compone así:
+
+- Slot **1/N**: slide intro autogenerada (con el `title`/`sub` de la sección).
+- Slot **2/N**: `00.webp` (portada).
+- Slot **3/N** en adelante: `01.webp`, `02.webp`, …
+
+El cliente **no entrega texto para `00.webp`** en el .doc (es la portada). El .doc arranca directamente en **"FOTO 2"**, y ese texto corresponde a `01.webp`.
+
+**Regla operativa estable** (la única que importa al cargar captions):
+
+- **doc FOTO N → archivo `(N-1).webp`** para `N ≥ 2` (generalmente; con intercalados como `15a.webp` el offset se mantiene por orden natural-numérico, no por número estricto).
+
+Ejemplo (`public/Argentina/Valadon/`): "FOTO 2" del .doc (Suzanne en Bessines) → `01.webp`. "FOTO 7" (que menciona "Acróbata" + "Amazona") → `06-Circo2-Acrobata-Amazona.webp`.
+
+Antes de empezar a aplicar un .doc nuevo, **chequear esta correspondencia con un par de archivos cuyo nombre tenga hint descriptivo** (p. ej. uno con apellido o tema en el filename) — confirma que el offset es el esperado y descarta que el cliente haya numerado de otra forma en ese álbum.
 
 ## Arquitectura: componentes compartidos + páginas de datos
 

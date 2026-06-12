@@ -2,7 +2,6 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 const IMAGE_RE = /\.(jpe?g|png|webp|avif|gif)$/i;
-const COVER_RE = /^00\./i;
 const SORT_OPTS = { numeric: true, sensitivity: 'base' } as const;
 
 const naturalSort = (a: string, b: string): number =>
@@ -30,11 +29,11 @@ export interface GallerySectionData {
   captions: Record<string, CaptionEntry>;
 }
 
-/** Lista las imágenes de una carpeta (excluye 00.* portada), orden natural. */
+/** Lista las imágenes de una carpeta (incluye 00.webp como primer slide), orden natural. */
 export function getImages(folder: string): string[] {
   const dir = join(process.cwd(), 'public', folder);
   return readdirSync(dir)
-    .filter(f => IMAGE_RE.test(f) && !COVER_RE.test(f))
+    .filter(f => IMAGE_RE.test(f))
     .sort(naturalSort);
 }
 
@@ -48,7 +47,7 @@ export function getImagesRecursive(folder: string): string[] {
       const child = rel ? `${rel}/${entry.name}` : entry.name;
       if (entry.isDirectory()) {
         walk(child);
-      } else if (IMAGE_RE.test(entry.name) && !COVER_RE.test(entry.name)) {
+      } else if (IMAGE_RE.test(entry.name)) {
         out.push(child);
       }
     }
@@ -57,12 +56,12 @@ export function getImagesRecursive(folder: string): string[] {
   return out.sort(naturalSort);
 }
 
-/** Deriva la lista de imágenes desde el orden del fotos.json (excluye 00.webp). */
+/** Deriva la lista de imágenes desde el orden del fotos.json. */
 export function getImagesFromCaptions(folder: string): string[] {
   const jsonPath = join(process.cwd(), 'public', folder, 'fotos.json');
   try {
     const data: Array<{ photo: string }> = JSON.parse(readFileSync(jsonPath, 'utf-8'));
-    return data.map(e => e.photo).filter(p => p !== '00.webp');
+    return data.map(e => e.photo);
   } catch {
     return [];
   }
